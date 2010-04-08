@@ -1,0 +1,12 @@
+Version 0.1.1:
+Fixed random failures due to using global request.
+Better error handling and display.
+Added refresh button on popup, data now only refreshes when this is selected.
+Added some basic download stats to tooltip.
+Added additional information in popup below graph.
+Current position in month indicator arrow implemented.
+Added loading mask.
+
+Version 0.1.0:
+Very basic graph/percentage display functionality.
+Only works against Adam Internet usage feed.

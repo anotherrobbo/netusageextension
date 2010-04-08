@@ -1,0 +1,124 @@
+<html>
+	<head>
+		<link rel=StyleSheet href="css/style.css" type="text/css" media=screen>
+		<script type="text/javascript" src="js/util.js"></script>
+		<script>
+			var background = chrome.extension.getBackgroundPage();
+			
+			function updateUsage() {
+				var graphContainer = document.getElementById("graphContainer");
+				var errorContainer = document.getElementById("errorContainer");
+				errorContainer.style.display = "none";
+				graphContainer.style.display = "block";
+				loading(true);
+				background.updateUsage();
+			}
+			
+			function showUsage(data) {
+				var graphContainer = document.getElementById("graphContainer");
+				var errorContainer = document.getElementById("errorContainer");
+				if (!background.failureReason) {
+					// update graph
+					var peak = document.getElementById("peak");
+					var peakPercent = document.getElementById("peakPercent");
+					peak.style.width = data.peakPercent + "%";
+					peakPercent.innerHTML = data.peakPercent + "%";
+					
+					var offpeak = document.getElementById("offpeak");
+					var offpeakPercent = document.getElementById("offpeakPercent");
+					offpeak.style.width = data.offpeakPercent + "%";
+					offpeakPercent.innerHTML = data.offpeakPercent + "%";
+					
+					var timePercent = Math.round((data.totalDays - data.daysRemaining) / data.totalDays * 100);
+					var arrow = document.getElementById("arrow");
+					arrow.style.left = timePercent + "%";
+					
+					//update info table
+					var user = document.getElementById("user");
+					var plan = document.getElementById("plan");
+					var peakDl = document.getElementById("peakDl");
+					var offpeakDl = document.getElementById("offpeakDl");
+					var upload = document.getElementById("upload");
+					var lastReset = document.getElementById("lastReset");
+					var timeRemaining = document.getElementById("timeRemaining");
+					user.innerHTML = data.user;
+					plan.innerHTML = data.plan;
+					peakDl.innerHTML = data.peakDl + "/" + data.quota + data.unit + " (" + data.peakPercent + "%)";
+					offpeakDl.innerHTML = data.offpeakDl + "/" + data.quota + data.unit + " (" + data.offpeakPercent + "%)";
+					upload.innerHTML = data.upload + "/" + data.quota + data.unit + " (" + data.uploadPercent + "%)";
+					lastReset.innerHTML = data.lastReset;
+					timeRemaining.innerHTML = data.daysRemaining + "d " + data.hoursRemaining + "h";
+					
+					errorContainer.style.display = "none";
+					graphContainer.style.display = "block";
+				} else {
+					errorContainer.innerHTML = "<b>ERROR:</b> " + background.failureReason;
+					errorContainer.style.display = "block";
+					graphContainer.style.display = "none";
+				}
+				loading(false);
+			}
+
+			function loading(mask) {
+				var loading = document.getElementById("loading");
+				if (mask) {
+					loading.style.display = "block";
+				} else {
+					loading.style.display = "none";
+				}
+			}
+		</script>
+	</head>
+	<body onload="showUsage(loadObject('data'))">
+		<div id="loading" class="loading">
+			<div id="loadingMask" class="loadingMask"></div>
+			<div id="loadingMsg" class="loadingMsg">Loading...</div>
+		</div>
+		<div class="row">
+			<div id="graphContainer" class="graphContainer">
+				<div id="graph" class="graph">
+					<div id="peak" class="peak"></div>
+					<div id="offpeak" class="offpeak"></div>
+					<div id="arrow" class="arrow"></div>
+					<div id="peakPercent" class="percent"></div>
+					<div id="offpeakPercent" class="percent"></div>				
+				</div>
+			</div>
+			<div id="errorContainer" class="errorContainer"> 
+			</div>
+			<div class="refresh" onClick="javascript:updateUsage();" title="Refresh"></div>
+		</div>
+		<div class="row">
+			<div id="infoContainer" class="infoContainer">
+				<div class="infoRow">
+					<div class="infoLabel">User:</div>
+					<div id="user" class="infoValue"></div>		
+				</div>
+				<div class="infoRow">
+					<div class="infoLabel">Plan:</div>
+					<div id="plan" class="infoValue"></div>		
+				</div>
+				<div class="infoRow">
+					<div class="infoLabel">Peak DL:</div>
+					<div id="peakDl" class="infoValue"></div>		
+				</div>
+				<div class="infoRow">
+					<div class="infoLabel">Off-peak DL:</div>
+					<div id="offpeakDl" class="infoValue"></div>		
+				</div>
+				<div class="infoRow">
+					<div class="infoLabel">Upload:</div>
+					<div id="upload" class="infoValue"></div>		
+				</div>
+				<div class="infoRow">
+					<div class="infoLabel">Last Reset:</div>
+					<div id="lastReset" class="infoValue"></div>		
+				</div>
+				<div class="infoRow">
+					<div class="infoLabel">Time Remaining:</div>
+					<div id="timeRemaining" class="infoValue"></div>		
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
