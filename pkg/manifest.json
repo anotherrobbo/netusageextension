@@ -1,0 +1,19 @@
+{
+	"name": "Net Usage Extension",
+	"version": "0.1.1",
+	"description": "Extension to display current internet quota usage.",
+	"background_page": "background.html",
+	"browser_action": {
+		"default_icon": "images/icon19_m.png",
+		"popup": "usage.html",
+		"default_title": "Please check Options"    
+	},
+	"icons": {
+		"48": "images/icon48.png",
+		"128": "images/icon128.png"
+	},
+	"options_page": "options.html",
+	"permissions": [
+		"https://members.adam.com.au/um2.1/"
+	]
+}

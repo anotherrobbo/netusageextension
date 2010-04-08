@@ -1,0 +1,34 @@
+  <Response> 
+    <UsageMeter> 
+      <Name>Adam Internet XML Usage Meter</Name> 
+      <Version>2.1</Version> 
+      <Disclaimer>XML Feed provided to you by Adam Internet to monitor your usage. This information is provided to you as a guide only and must not be relied upon as a commitment or authorative in nature.</Disclaimer> 
+      <PreviousVersion>2.0</PreviousVersion> 
+      <PreviousVersionURI>https://members.adam.com.au/um2.0/usage.xml</PreviousVersionURI> 
+      <NextVersion></NextVersion> 
+      <NextVersionURI></NextVersionURI> 
+      <FrequentHitPenalty>0</FrequentHitPenalty> 
+    </UsageMeter> 
+    <Customer> 
+      <Account type="ADSL" username="username"> 
+        <QuotaStartDate>2010-03-14</QuotaStartDate> 
+        <PlanType>Adam Naked</PlanType> 
+        <PlanSpeed>24000/1000</PlanSpeed> 
+        <MegabyteQuota>12000</MegabyteQuota> 
+        <MegabyteDatablocks>0</MegabyteDatablocks> 
+        <NewsgroupQuota>10000</NewsgroupQuota> 
+        <Usage> 
+          <MegabytesDownloadedPeak>3974</MegabytesDownloadedPeak> 
+          <MegabytesDownloadedOffPeak>3868</MegabytesDownloadedOffPeak> 
+          <MegabytesUploadedTotal>467</MegabytesUploadedTotal> 
+          <MegabytesNewsgroupTotal>0</MegabytesNewsgroupTotal> 
+          <LastUsageUpdate>2010-04-04T15:31:55+09:30</LastUsageUpdate> 
+          <NextUsageUpdateEstimate>2010-04-04T17:24:03+09:30</NextUsageUpdateEstimate> 
+        </Usage> 
+      </Account> 
+      <Account type="AdamTalk" username="username"> 
+        <DID primary="true">0871296378</DID> 
+        <Usage /> 
+      </Account> 
+    </Customer> 
+  </Response> 

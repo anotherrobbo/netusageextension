@@ -1,0 +1,180 @@
+html,body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	font-family: helvetica;
+	font-size: 12px;
+	min-width: 160px;
+	min-height: 20px;
+}
+
+/* DETAILS */
+div.row {
+	min-height: 20px;
+}
+
+div.errorContainer {
+	width: 145px;
+	color: #aa0000;
+}
+
+div.loading {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 100;
+}
+
+div.loadingMask {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	background-color: #ffffff;
+	opacity: 0.7;
+}
+
+div.loadingMsg {
+	width: 60px;
+	height: 18px;
+	position: absolute;
+    top: 50%;
+    left: 50%;
+	margin-top: -9px;
+    margin-left: -30px;
+	background-color: #ccffff;
+	opacity: 1;
+	border: solid 1px #336699;
+	border-radius: 3px;
+	text-align:center;
+}
+
+div.refresh {
+	position:absolute;
+	width: 14px;
+	height: 15px;
+	right: 5px;
+	top: 3px;
+	background-image: url("../images/refresh.png");
+	cursor: pointer;
+}
+
+/* GRAPH */
+div.graphContainer {
+	position: absolute;
+	width: 127px;
+	height: 14px;
+	left: 50%;
+	margin-left: -75px;
+	border: solid 2px #676767;
+	border-radius: 10px;
+	padding: 1px 5px 1px 5px;	
+	background-image: url("../images/container.png");
+}
+
+div.graph {
+	position:relative;
+	width: 125px;
+	height: 12px;
+	overflow: hidden;
+	border: solid 1px #676767;
+	border-radius: 3px;
+	background-image: url("../images/graph.png");
+}
+
+div.graph div {
+	position:absolute;
+}
+
+div.peak {
+	width: 0px;
+	height: 12px;
+	background-image: url("../images/peak.png");
+}
+
+div.offpeak {
+	width: 0px;
+	height: 6px;
+	top: 6px;
+	background-image: url("../images/offpeak.png");
+}
+
+div.percent {
+	top: -2px;
+	font-size: 14px;
+	font-weight: bold;
+	text-shadow: #ffffff 0px 0px 5px, #ffffff 0px 0px 3px;
+}
+
+div.arrow {
+	width: 7px;
+	height: 4px;
+	left: -4px;
+	background-image: url("../images/arrowDown.png");
+}
+
+div#peakPercent {
+	right: 2px;
+}
+
+div#offpeakPercent {
+	left: 2px;
+}
+
+/* INFO TABLE */
+div.infoContainer {
+	width: 250px;
+	border: solid 2px #336699;
+	border-radius: 5px;
+	margin: 2px 2px 2px 2px;
+	padding: 2px 2px 2px 2px;
+}
+
+div.infoRow {
+	height: 15px;
+}
+
+div.infoRow div {
+	position: absolute;
+}
+
+div.infoValue {
+	left: 110px;
+}
+
+/* OPTIONS */
+div#heading {
+	font-size: 20px;
+	font-weight: bold;
+	border-bottom: solid 1px #cccccc;
+}
+
+div#main {
+	padding: 10;
+}
+
+div#options {
+	margin-top: 20px;
+	border-bottom: solid 1px #cccccc;
+}
+
+div.fieldLabel {
+	position: relative;
+	top: 0;
+	left: 0;
+}
+
+div.field {
+	position: relative;
+	top: -20;
+	left: 100px;
+}
+
+div#status {
+	color: #009900;
+	font-weight: bold;
+}
