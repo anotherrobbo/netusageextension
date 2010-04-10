@@ -48,6 +48,7 @@ function UsageData() {
 	this.totalDays;
 	
 	this.loaded = false;
+	this.error = "";
 }
 
 function doDataPctCalc(data) {

@@ -61,8 +61,12 @@
 						}
 						if (req.status == 200 || (debug && req.status == 0)) {
 							var data = processData(req.responseXML, req.responseText);
-							storeObject("data", data);
-							success(data);
+							if (data.loaded) {
+								storeObject("data", data);
+								success(data);
+							} else {
+								fail("Failed to get usage data<br>Invalid usage data returned from server<br>" + data.error + "<br>Please check settings in Options");
+							}
 						} else {
 							fail("Failed to get usage data<br>Request returned status of " + req.status + "<br>Please check settings in Options");
 						}

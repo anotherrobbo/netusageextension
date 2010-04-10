@@ -33,6 +33,11 @@ function processData(xml, text) {
 //	data.user;
 	var planRegex = /<dt>Plan<\/dt>\s*<dd>(.*)<\/dd>/;
 	var result = planRegex.exec(text);
+	if (result == null) {
+		data.loaded = false;
+		data.error = "Plan information not found";
+		return data;
+	}
 	data.plan = result[1];
 	data.unit = "GB";
 	
@@ -42,14 +47,29 @@ function processData(xml, text) {
 	
 	var peakDlRegex = /<dt>Total Downloads<\/dt>\s*<dd>([\d\.]+?) GB<\/dd>/;
 	result = peakDlRegex.exec(text);
+	if (result == null) {
+		data.loaded = false;
+		data.error = "Download information not found";
+		return data;
+	}
 	data.peakDl = result[1];
 //	data.offpeakDl;
 	var uploadRegex = /<dt>Total Uploads<\/dt>\s*<dd>([\d\.]+?) GB<\/dd>/;
 	result = uploadRegex.exec(text);
+	if (result == null) {
+		data.loaded = false;
+		data.error = "Upload information not found";
+		return data;
+	}
 	data.upload = result[1];
 	
 	var datesRegex = /<dt>Period<\/dt>\s*<dd>([\d\/]+?) - ([\d\/]+?)<\/dd>/;
 	result = datesRegex.exec(text);
+	if (result == null) {
+		data.loaded = false;
+		data.error = "Date information not found";
+		return data;
+	}
 	var lastResetDate = parseOrconDate(result[1]);
 	data.lastReset = formatDate(lastResetDate);
 	
@@ -58,6 +78,7 @@ function processData(xml, text) {
 	
 	doDataPctCalc(data);
 	
+	data.loaded = true;
 	return data;
 }
 
