@@ -1,0 +1,71 @@
+/*
+ISP specific JavaScript for Orcon
+
+MUST implement the following methods:
+getCustomOptions (returns an array of Option Objects)
+getConnectionDetails (returns a ConnectionDetails Object)
+processData(xml, text) (processes the supplied input data to return a UsageData Object)
+
+See util.js for details on individual Objects
+*/
+
+function getCustomOptions() {
+	// make a call to function in util.js
+	var options = getBasicOptions();
+	var count = options.length;
+	options[count++] = new Option("input", "Quota (GB)", "quota");
+	return options;
+}
+
+function getConnectionDetails() {
+	var details = new ConnectionDetails();
+	details.action = "GET";
+	details.url = debug ? "orcon.xml" : "https://www.orcon.net.nz/modules/usagemeter/view/CosmosController.php";
+	details.loaded = localStorage["quota"];
+	if (!details.loaded) {
+		details.error = "Quota missing"
+	}
+	return details;
+}
+
+function processData(xml, text) {
+	var data = new UsageData();
+//	data.user;
+	var planRegex = /<dt>Plan<\/dt>\s*<dd>(.*)<\/dd>/;
+	var result = planRegex.exec(text);
+	data.plan = result[1];
+	data.unit = "GB";
+	
+	data.peakQuota = localStorage["quota"];
+//	data.offpeakQuota = data.peakQuota;
+	data.uploadQuota = data.peakQuota;
+	
+	var peakDlRegex = /<dt>Total Downloads<\/dt>\s*<dd>([\d\.]+?) GB<\/dd>/;
+	result = peakDlRegex.exec(text);
+	data.peakDl = result[1];
+//	data.offpeakDl;
+	var uploadRegex = /<dt>Total Uploads<\/dt>\s*<dd>([\d\.]+?) GB<\/dd>/;
+	result = uploadRegex.exec(text);
+	data.upload = result[1];
+	
+	var datesRegex = /<dt>Period<\/dt>\s*<dd>([\d\/]+?) - ([\d\/]+?)<\/dd>/;
+	result = datesRegex.exec(text);
+	var lastResetDate = parseOrconDate(result[1]);
+	data.lastReset = formatDate(lastResetDate);
+	
+	var nextResetDate = parseOrconDate(result[2]);
+	data.nextReset = formatDate(nextResetDate);
+	
+	doDataPctCalc(data);
+	
+	return data;
+}
+
+//Parses the dateString in the format dd/MM/yyyy
+function parseOrconDate(dateString) {
+	var year = dateString.substring(6, 10);
+	var month = dateString.substring(3, 5) - 1;
+	var day = dateString.substring(0, 2);
+	var date = new Date(year, month, day);
+	return date;
+}

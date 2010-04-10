@@ -3,13 +3,37 @@
 		<script type="text/javascript" src="js/util.js"></script>
 		<script>
 			var failureReason;
-			
+			var updateId;
+
 			function updateUsage() {
+				cancelScheduledUpdate();
+				doUpdate();
+				if (localStorage["refresh"] && localStorage["refresh"] > 0) {
+					updateId = setTimeout(function() {updateUsage();}, localStorage["refresh"]);
+				}
+			}
+
+			function cancelScheduledUpdate() {
+				if (updateId) {
+					clearTimeout(updateId);
+					updateId = undefined;
+				}
+			}
+
+			function doUpdate() {
+				console.log("doUpdate: " + new Date());
 				loading();
-				var provider = localStorage["provider"];
-				var providerLoaded = loadProvider(provider);
-				if (providerLoaded) {
-					details = getConnectionDetails();
+				var isp = localStorage["isp"];
+				if (!isp) {
+					fail("Failed to load required settings<br>ISP details missing<br>Please set up in Options");
+					return;
+				}
+				var ispLoaded = loadISP(isp, function() {
+					var details = getConnectionDetails();
+					loadData(details);
+				});
+				if (ispLoaded) {
+					var details = getConnectionDetails();
 					loadData(details);
 				}
 			}
@@ -17,66 +41,36 @@
 			function loadData(details) {
 				if (details.loaded) {
 					var req = new XMLHttpRequest();
+
+					timeoutId = setTimeout(function() {
+						if (req.readyState != 4 || req.status != 200) {
+							req.abort();
+							fail("Failed to get usage data<br>Request timed out<br>Please check settings in Options");
+						}
+					}, 5000);
+					
 					req.open(
 						details.action
 						,details.url
-						//,"usage.xml"
 						,true
 					);
 					req.onload = function() {
-						//alert("load data: " + req.status);
-						if (req.status == 200) {
-							var data = processData(req.responseXML);
+						console.log("onload, req.status=" + req.status);
+						if (timeoutId) {
+							clearTimeout(timeoutId);
+						}
+						if (req.status == 200 || (debug && req.status == 0)) {
+							var data = processData(req.responseXML, req.responseText);
 							storeObject("data", data);
 							success(data);
 						} else {
-							fail("Failed to get usage data, please check settings in Options");
+							fail("Failed to get usage data<br>Request returned status of " + req.status + "<br>Please check settings in Options");
 						}
 					}
-					req.onabort = function() {
-						fail("Failed to get usage data, please check settings in Options");
-					}					
 					req.send(null);
-					
-					setTimeout(function() {
-						if (req.readyState != 4 || req.status != 200) {
-							//alert(req.readyState);// + " " + req.status);
-							req.abort();
-						}
-					}, 5000);
 				} else {
-					fail("Failed to load required settings, please set up in Options");
+					fail("Failed to load required settings<br>" + details.error + "<br>Please set up in Options");
 				}
-			}
-			
-			function loadProvider(provider) {
-				var newelement = createProvider(provider);
-				var targetelement = "script";
-				var targetattr = "src";
-				var allsuspects = document.getElementsByTagName(targetelement);
-				for (var i = allsuspects.length - 1; i >= 0; i--) {
-					if (allsuspects[i] && allsuspects[i].getAttribute(targetattr)!=null && allsuspects[i].getAttribute(targetattr).indexOf("isp_") != -1) {
-						if (allsuspects[i].getAttribute(targetattr) == "js/isp_" + provider + ".js") {
-							return true;
-						} else {
-							allsuspects[i].parentNode.replaceChild(newelement, allsuspects[i])
-							return false;
-						}
-					}
-				}
-				document.getElementsByTagName("head")[0].appendChild(newelement);
-				return false;
-			}
-			
-			function createProvider(provider) {
-				var providerJs = document.createElement('script');
-				providerJs.setAttribute("type","text/javascript");
-				providerJs.setAttribute("src", "js/isp_" + provider + ".js");
-				providerJs.onload = function() {
-					var details = getConnectionDetails();//localStorage["connectionDetails"];
-					loadData(details);
-				}
-				return providerJs;
 			}
 			
 			function loading() {
@@ -88,23 +82,24 @@
 			
 			function success(data) {
 				failureReason = undefined;
-				chrome.browserAction.setBadgeText({text:data.peakPercent + "%"});
-				if (data.onpeakPercent >= 90) {
+				chrome.browserAction.setBadgeText({text:data.peakPct + "%"});
+				if (data.peakPct >= 90) {
 					chrome.browserAction.setBadgeBackgroundColor({color:[255,0,0,255]});
 				} else {
 					chrome.browserAction.setBadgeBackgroundColor({color:[0,128,0,255]});
 				}
 				chrome.browserAction.setIcon({path:"images/icon19.png"});
-				chrome.browserAction.setTitle({title:
-					  "Peak: " + data.peakDl + "/" + data.quota + data.unit + " (" + data.peakPercent + "%)"
-					+ "\nOffPeak: " + data.offpeakDl + "/" + data.quota + data.unit + " (" + data.offpeakPercent + "%)"
-					+ "\nClick for more details"
-					});
+				var title = "Peak: " + data.peakDl + "/" + data.peakQuota + data.unit + " (" + data.peakPct + "%)";
+				if (data.offpeakDl) {
+					title += + "\nOffPeak: " + data.offpeakDl + "/" + data.offpeakQuota + data.unit + " (" + data.offpeakPct + "%)";
+				}
+				title += "\nClick for more details"
+				chrome.browserAction.setTitle({title:title});
 				updateViews(data);
 			}
 			
 			function fail(reason) {
-				//alert('fail');
+				console.log("fail: " + reason);
 				failureReason = reason;
 				chrome.browserAction.setBadgeText({text:"?"});
 				chrome.browserAction.setBadgeBackgroundColor({color:[128,128,128,255]});
@@ -117,7 +112,6 @@
 				var views = chrome.extension.getViews();
 				for (var i = 0, view; view = views[i]; i++) {
 					if (view.location.pathname == "/usage.html") {
-						//alert("Showing Usage");
 						view.showUsage(data);
 					}
 				}
