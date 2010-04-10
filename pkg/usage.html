@@ -8,8 +8,10 @@
 			function updateUsage() {
 				var graphContainer = document.getElementById("graphContainer");
 				var errorContainer = document.getElementById("errorContainer");
+				var infoContainer = document.getElementById("infoContainer");
 				errorContainer.style.display = "none";
 				graphContainer.style.display = "block";
+				infoContainer.style.display = "none";
 				loading(true);
 				background.updateUsage();
 			}
@@ -17,17 +19,23 @@
 			function showUsage(data) {
 				var graphContainer = document.getElementById("graphContainer");
 				var errorContainer = document.getElementById("errorContainer");
+				var infoContainer = document.getElementById("infoContainer");
 				if (!background.failureReason) {
+					// Perform date calcs each load so they are correct against the time now.
+					doDataDateCalc(data);
+					
 					// update graph
 					var peak = document.getElementById("peak");
 					var peakPercent = document.getElementById("peakPercent");
-					peak.style.width = data.peakPercent + "%";
-					peakPercent.innerHTML = data.peakPercent + "%";
+					peak.style.width = data.peakPct + "%";
+					peakPercent.innerHTML = data.peakPct + "%";
 					
-					var offpeak = document.getElementById("offpeak");
-					var offpeakPercent = document.getElementById("offpeakPercent");
-					offpeak.style.width = data.offpeakPercent + "%";
-					offpeakPercent.innerHTML = data.offpeakPercent + "%";
+					if (data.offpeakDl) {
+						var offpeak = document.getElementById("offpeak");
+						var offpeakPercent = document.getElementById("offpeakPercent");
+						offpeak.style.width = data.offpeakPct + "%";
+						offpeakPercent.innerHTML = data.offpeakPct + "%";
+					}
 					
 					var timePercent = Math.round((data.totalDays - data.daysRemaining) / data.totalDays * 100);
 					var arrow = document.getElementById("arrow");
@@ -43,18 +51,20 @@
 					var timeRemaining = document.getElementById("timeRemaining");
 					user.innerHTML = data.user;
 					plan.innerHTML = data.plan;
-					peakDl.innerHTML = data.peakDl + "/" + data.quota + data.unit + " (" + data.peakPercent + "%)";
-					offpeakDl.innerHTML = data.offpeakDl + "/" + data.quota + data.unit + " (" + data.offpeakPercent + "%)";
-					upload.innerHTML = data.upload + "/" + data.quota + data.unit + " (" + data.uploadPercent + "%)";
+					peakDl.innerHTML = data.peakDl + "/" + data.peakQuota + data.unit + " (" + data.peakPct + "%)";
+					offpeakDl.innerHTML = data.offpeakDl + "/" + data.offpeakQuota + data.unit + " (" + data.offpeakPct + "%)";
+					upload.innerHTML = data.upload + "/" + data.uploadQuota + data.unit + " (" + data.uploadPct + "%)";
 					lastReset.innerHTML = data.lastReset;
 					timeRemaining.innerHTML = data.daysRemaining + "d " + data.hoursRemaining + "h";
 					
 					errorContainer.style.display = "none";
 					graphContainer.style.display = "block";
+					infoContainer.style.display = "block";
 				} else {
 					errorContainer.innerHTML = "<b>ERROR:</b> " + background.failureReason;
 					errorContainer.style.display = "block";
 					graphContainer.style.display = "none";
+					infoContainer.style.display = "none";
 				}
 				loading(false);
 			}

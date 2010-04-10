@@ -1,3 +1,8 @@
+Version 0.2.0:
+Added Orcon (NZ) support.
+Added Automatic refresh on configurable interval.
+Fixed bug where extension would hang if initial setup was not performed.
+
 Version 0.1.1:
 Fixed random failures due to using global request.
 Better error handling and display.

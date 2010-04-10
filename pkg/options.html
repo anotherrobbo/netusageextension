@@ -2,17 +2,146 @@
 	<head>
 		<title>Net Usage Extension Options</title>
 		<link rel=StyleSheet href="css/style.css" type="text/css" media=screen>
+		<script type="text/javascript" src="js/util.js"></script>
 		<script type="text/javascript">
-			// Saves options to localStorage.
-			function save_options() {
-				var provider = document.getElementById("provider").value;
-				localStorage["provider"] = provider;
+			var background = chrome.extension.getBackgroundPage();
+		
+			var countries = [["au","Australia"], ["nz","New Zealand"]];
+			var isps = new Object();
+			isps.au = [["adam","Adam Internet"]];
+			isps.nz = [["orcon","Orcon"]];
+		
+			function createOptions() {
+				if (!localStorage["country"]) {
+					// default to first in array
+					localStorage["country"] = countries[0][0];
+				}
+				if (!localStorage["isp"]) {
+					// default to first in array
+					localStorage["isp"] = isps[localStorage["country"]][0][0];
+				}
+				// Country dropdown field
+				var countryField = addField("Country", createSelectField("country", countries), "mainOptions");
+				countryField.onchange = function() {countryChanged(this.value);};
+				countryField.value = localStorage["country"];
+				console.log("Loaded " + countryField.id + " : " + localStorage["country"]);
+				// ISP dropdown field
+				var ispField = addField("ISP", createSelectField("isp", isps[localStorage["country"]]), "mainOptions");
+				ispField.onchange = function() {ispChanged(this.value);};
+				ispField.value = localStorage["isp"];
+				console.log("Loaded " + ispField.id + " : " + localStorage["isp"]);
+				
+				ispChanged(localStorage["isp"]);
+			}
 			
-				var username = document.getElementById("username").value;
-				localStorage["username"] = username;
-
-				var password = document.getElementById("password").value;
-				localStorage["password"] = password;
+			function createCustomOptions() {
+				// clear out current options
+				removeAllChildren(document.getElementById("leftColumn"));
+				var options = getCustomOptions();
+				for (var i = 0, option; option = options[i]; i++) {
+					if ("select" == option.type) {
+						addCustomField(option.label, createSelectField(option.id, option.values));
+					} else {
+						addCustomField(option.label, createField(option.id));
+					}
+				}
+				restoreOptions();
+			}
+			
+			function createSelectField(fieldId, values) {
+				var field = document.createElement("select");
+				field.id = fieldId;
+				for (var i = 0, value; value = values[i]; i++) {
+					var option = document.createElement("option");
+					option.value = value[0];
+					option.innerHTML = value[1];
+					field.appendChild(option);
+				}
+				field.className = "field"
+				/*
+				<select id="isp">
+					<option class="field" value="adam">Adam Internet</option>
+				</select>
+				*/
+				return field;
+			}
+			
+			function createField(fieldId) {
+				var field = document.createElement("input");
+				if ("password" == fieldId) {
+					field.type = "password";
+				} else {
+					field.type = "text";
+				}
+				field.id = fieldId;
+				field.className = "field";
+				return field;
+			}
+			
+			function addCustomField(fieldLabel, field) {
+				return addField(fieldLabel, field, "leftColumn");
+			}
+			
+			function addField(fieldLabel, field, containerId) {
+				var optionDiv = document.createElement("div");
+				optionDiv.className = "optionDiv";
+				
+				var labelDiv = document.createElement("div");
+				labelDiv.className = "fieldLabel";
+				labelDiv.innerHTML = fieldLabel + ":";
+				optionDiv.appendChild(labelDiv);
+				
+				var fieldDiv = document.createElement("div");
+				fieldDiv.className = "fieldDiv";
+				fieldDiv.appendChild(field);
+				optionDiv.appendChild(fieldDiv);
+				
+				document.getElementById(containerId).appendChild(optionDiv);
+				
+				/*
+				<div class="option">
+					<div class="fieldLabel">Provider:</div>
+					<div class="fieldDiv">
+						<input class="field" type="" id="" />
+					</div>
+				</div>
+				*/
+				return field;
+			}
+			
+			function countryChanged(country) {
+				console.log("countryChanged: " + country);
+				var ispField = document.getElementById("isp");
+				var newIspField = createSelectField("isp", isps[country]);
+				newIspField.onchange = function() {ispChanged(this.value);};
+				ispField.parentNode.replaceChild(newIspField, ispField);
+				// default to first in array
+				newIspField.value = isps[localStorage["country"]][0][0];
+				if (newIspField.onchange) {
+					newIspField.onchange();
+				}
+			}
+			
+			function ispChanged(isp) {
+				console.log("ispChanged: " + isp);
+				var ispLoaded = loadISP(isp, function() {
+					createCustomOptions();
+				});
+				if (ispLoaded) {
+					createCustomOptions();
+				}				
+			}
+		
+			// Saves options to localStorage.
+			function saveOptions() {
+				console.log("saveOptions");
+				background.cancelScheduledUpdate();
+				localStorage.clear();
+				var fields = document.getElementsByClassName("field");
+				for (var i = 0, field; field = fields[i]; i++) {
+					localStorage[field.id] = field.value;
+					console.log("Stored " + field.id + " : " + field.value);
+				}
 
 				// Update status to let user know options were saved.
 				var status = document.getElementById("status");
@@ -20,55 +149,39 @@
 				setTimeout(function() {
 					status.innerHTML = "";
 				}, 1000);
+				background.updateUsage();
 			}
 
 			// Restores field states to saved values from localStorage.
-			function restore_options() {
-				var provider = localStorage["provider"];
-				if (provider) {
-					document.getElementById("provider").value = provider;
-				}
-
-				var username = localStorage["username"];
-				if (username) {
-					document.getElementById("username").value = username;
-				}
-
-				var password = localStorage["password"];
-				if (password) {
-					document.getElementById("password").value = password;
+			function restoreOptions() {
+				console.log("restoreOptions");
+				var customOptions = document.getElementById("customOptions");
+				var fields = customOptions.getElementsByClassName("field");
+				for (var i = 0, field; field = fields[i]; i++) {
+					var newValue = localStorage[field.id];
+					if (newValue) {
+						var origValue = field.value;
+						field.value = newValue;
+						console.log("Loaded " + field.id + " : " + newValue);
+					}
 				}
 			}
 		</script>
 	</head>
 
-	<body onload="restore_options()">
+	<body onload="createOptions();">
 		<div id="main">
-			<div id="heading">
-				Net Usage Extension Options
+			<div id="heading">Net Usage Extension Options</div>
+			<div id="mainOptions">
 			</div>
-			<div id="options">
-				<div class="option">
-					<div class="fieldLabel">Provider:</div>
-					<div class="field">
-						<select id="provider">
-							<option value="adam">Adam Internet</option>
-						</select>
-					</div>
-				</div>
-				<div class="option">
-					<div class="fieldLabel">Username:</div>
-					<div class="field"><input type="text" id="username" /></div>
-				</div>
-				<div class="option">
-					<div class="fieldLabel">Password:</div>
-					<div class="field"<input type="password" id="password" /></div>
+			<div id="customOptions">
+				<div id="leftColumn" class="leftColumn">
 				</div>
 			</div>
 			<br>
-			<button onclick="save_options()">Save</button>
+			<button onclick="saveOptions();">Save and Refresh</button>
 			<br><br>
-			<div id="status" />
+			<div id="status"></div>
 		</div>
 	</body>
 </html>
