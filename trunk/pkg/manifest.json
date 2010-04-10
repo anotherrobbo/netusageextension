@@ -1,6 +1,6 @@
 {
 	"name": "Net Usage Extension",
-	"version": "0.1.1",
+	"version": "0.2.0",
 	"description": "Extension to display current internet quota usage.",
 	"background_page": "background.html",
 	"browser_action": {
@@ -15,5 +15,6 @@
 	"options_page": "options.html",
 	"permissions": [
 		"https://members.adam.com.au/um2.1/"
+		,"https://www.orcon.net.nz/modules/usagemeter/view/"
 	]
 }

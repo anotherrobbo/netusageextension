@@ -67,6 +67,7 @@ function loadAccount(account) {
 	
 	doDataPctCalc(data);
 	
+	data.loaded = true;
 	return data;
 }
 
