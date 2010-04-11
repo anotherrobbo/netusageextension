@@ -1,4 +1,4 @@
-var debug = false;
+var debug = true;
 
 // OBJECT DEFINITIONS
 // An option to be set on the Extension Options page.
@@ -149,6 +149,9 @@ function formatDate(date) {
 		month = "0" + month;
 	}
 	var day = date.getDate();
+	if (day < 10) {
+		day = "0" + day;
+	}
 	return day + "/" + month + "/" + year;
 }
 
