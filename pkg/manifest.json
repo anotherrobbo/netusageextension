@@ -1,6 +1,6 @@
 {
 	"name": "Net Usage Extension",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "Extension to display current internet quota usage.",
 	"background_page": "background.html",
 	"browser_action": {

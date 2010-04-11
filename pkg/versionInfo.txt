@@ -1,3 +1,6 @@
+Version 0.2.1:
+Fixed bug in Date handling code, affecting Dates prior to the 10th each month.
+
 Version 0.2.0:
 Added Units/day display on info popup (calculations are per whole day, eg 2d 6h will be rounded up to 3d).
 Added support for datablocks, now added to quota.
