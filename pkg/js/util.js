@@ -26,18 +26,22 @@ function UsageData() {
 	this.peakQuota;
 	this.peakDl;
 	this.peakPct;
+	this.peakRemaining;
 	
 	this.offpeakQuota;
 	this.offpeakDl;
 	this.offpeakPct;
+	this.offpeakRemaining;
 	
 	this.uploadQuota;
 	this.upload;
 	this.uploadPct;
+	this.uploadRemaining;
 	
 	this.miscQuota;
 	this.miscUsage;
 	this.miscPct;
+	this.miscRemaining;
 	this.miscName;
 	
 	this.lastReset;
@@ -56,6 +60,11 @@ function doDataPctCalc(data) {
 	data.offpeakPct = Math.round(data.offpeakDl / data.offpeakQuota * 100);
 	data.uploadPct = Math.round(data.upload / data.uploadQuota * 100);
 	data.miscPct = Math.round(data.miscUsage / data.miscQuota * 100);
+	
+	data.peakRemaining = data.peakQuota - data.peakDl;
+	data.offpeakRemaining = data.offpeakQuota - data.offpeakDl;
+	data.uploadRemaining = data.uploadQuota - data.uploadDl;
+	data.miscRemaining = data.miscQuota - data.miscDl;
 }
 
 function doDataDateCalc(data) {
@@ -65,6 +74,9 @@ function doDataDateCalc(data) {
 	data.daysRemaining = remaining.days;
 	data.hoursRemaining = remaining.hours;
 	data.totalDays = daysInMonth(lastResetDate.getMonth, lastResetDate.getFullYear());
+	
+	data.peakPerDayRemaining = Math.round(data.peakRemaining / (data.daysRemaining + 1));
+	data.offpeakPerDayRemaining = Math.round(data.offpeakRemaining / (data.daysRemaining + 1));
 }
 
 // Load up the script file for the given isp if it does not already exist on the page.

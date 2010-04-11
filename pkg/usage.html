@@ -50,19 +50,25 @@
 						addInfoRow(infoContainer, "Plan:", data.plan);
 					}
 					if (data.peakDl) {
-						addInfoRow(infoContainer, "Peak DL:", data.peakDl + "/" + data.peakQuota + data.unit + " (" + data.peakPct + "%)");
+						addInfoRow(infoContainer, "Peak DL:", data.peakDl + " / " + data.peakQuota + " " + data.unit + " (" + data.peakPct + "%)");
 					}
 					if (data.offpeakDl) {
-						addInfoRow(infoContainer, "Off-Peak DL:", data.offpeakDl + "/" + data.offpeakQuota + data.unit + " (" + data.offpeakPct + "%)");
+						addInfoRow(infoContainer, "Off-Peak DL:", data.offpeakDl + " / " + data.offpeakQuota + " " + data.unit + " (" + data.offpeakPct + "%)");
 					}
 					if (data.upload) {
-						addInfoRow(infoContainer, "Upload:", data.upload + "/" + data.uploadQuota + data.unit + " (" + data.uploadPct + "%)");
+						addInfoRow(infoContainer, "Upload:", data.upload + " / " + data.uploadQuota + " " + data.unit + " (" + data.uploadPct + "%)");
 					}
 					if (data.miscUsage) {
-						addInfoRow(infoContainer, data.miscName + ":", data.miscUsage + "/" + data.miscQuota + data.unit + " (" + data.miscPct + "%)");
+						addInfoRow(infoContainer, data.miscName + ":", data.miscUsage + " / " + data.miscQuota + " " + data.unit + " (" + data.miscPct + "%)");
 					}
 					addInfoRow(infoContainer, "Last Reset:", data.lastReset);
 					addInfoRow(infoContainer, "Time Remaining:", data.daysRemaining + "d " + data.hoursRemaining + "h");
+					if (data.peakDl) {
+						addInfoRow(infoContainer, "Peak Remaining:", data.peakPerDayRemaining + " " + data.unit + "/d");
+					}
+					if (data.offpeakDl) {
+						addInfoRow(infoContainer, "Off-Peak Remaining:", data.offpeakPerDayRemaining + " " + data.unit + "/d");
+					}
 					
 					errorContainer.style.display = "none";
 					graphContainer.style.display = "block";

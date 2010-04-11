@@ -1,4 +1,5 @@
 Version 0.2.0:
+Added Units/day display on info popup (calculations are per whole day, eg 2d 6h will be rounded up to 3d).
 Added support for datablocks, now added to quota.
 Added Newsgroup usage to Adam info.
 Added Orcon (NZ) support.
