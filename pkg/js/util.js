@@ -1,4 +1,4 @@
-var debug = true;
+var debug = false;
 
 // OBJECT DEFINITIONS
 // An option to be set on the Extension Options page.
