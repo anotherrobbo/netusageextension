@@ -95,7 +95,7 @@
 				chrome.browserAction.setIcon({path:"images/icon19.png"});
 				var title = "Peak: " + data.peakDl + "/" + data.peakQuota + data.unit + " (" + data.peakPct + "%)";
 				if (data.offpeakDl) {
-					title += + "\nOffPeak: " + data.offpeakDl + "/" + data.offpeakQuota + data.unit + " (" + data.offpeakPct + "%)";
+					title += "\nOffPeak: " + data.offpeakDl + "/" + data.offpeakQuota + data.unit + " (" + data.offpeakPct + "%)";
 				}
 				title += "\nClick for more details"
 				chrome.browserAction.setTitle({title:title});

@@ -23,7 +23,7 @@ function getConnectionDetails() {
 	details.action = "GET";
 	username = localStorage["username"];
 	password = localStorage["password"];
-	details.url = "https://" + username + ":" + password + "@members.adam.com.au/um2.1/usage.php";
+	details.url = debug ? "adam.xml" : "https://" + username + ":" + password + "@members.adam.com.au/um2.1/usage.php";
 	details.loaded = username && password;
 	if (!details.loaded) {
 		details.error = "Username or Password missing"
@@ -50,14 +50,19 @@ function loadAccount(account) {
 	data.plan = planType + " " + planSpeed;
 	data.unit = "MB";
 	
-	data.peakQuota = account.getElementsByTagName("MegabyteQuota")[0].textContent;
+	var quota = account.getElementsByTagName("MegabyteQuota")[0].textContent;
+	var datablocks = account.getElementsByTagName("MegabyteDatablocks")[0].textContent;
+	data.peakQuota = parseInt(quota) + parseInt(datablocks);
 	data.offpeakQuota = data.peakQuota;
 	data.uploadQuota = data.peakQuota;
+	data.miscQuota = account.getElementsByTagName("NewsgroupQuota")[0].textContent;
+	data.miscName = "Newsgroup";
 	
 	var usage = account.getElementsByTagName("Usage")[0];
 	data.peakDl = usage.getElementsByTagName("MegabytesDownloadedPeak")[0].textContent;
 	data.offpeakDl = usage.getElementsByTagName("MegabytesDownloadedOffPeak")[0].textContent;
 	data.upload = usage.getElementsByTagName("MegabytesUploadedTotal")[0].textContent;
+	data.miscUsage = usage.getElementsByTagName("MegabytesNewsgroupTotal")[0].textContent;
 	
 	var lastResetDate = parseAdamDate(account.getElementsByTagName("QuotaStartDate")[0].textContent);
 	data.lastReset = formatDate(lastResetDate);
