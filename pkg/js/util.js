@@ -36,7 +36,7 @@ function UsageData() {
 	this.uploadPct;
 	
 	this.miscQuota;
-	this.miscDl;
+	this.miscUsage;
 	this.miscPct;
 	this.miscName;
 	
@@ -55,6 +55,7 @@ function doDataPctCalc(data) {
 	data.peakPct = Math.round(data.peakDl / data.peakQuota * 100);
 	data.offpeakPct = Math.round(data.offpeakDl / data.offpeakQuota * 100);
 	data.uploadPct = Math.round(data.upload / data.uploadQuota * 100);
+	data.miscPct = Math.round(data.miscUsage / data.miscQuota * 100);
 }
 
 function doDataDateCalc(data) {

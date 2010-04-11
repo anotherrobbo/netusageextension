@@ -44,6 +44,7 @@ function processData(xml, text) {
 	data.peakQuota = localStorage["quota"];
 //	data.offpeakQuota = data.peakQuota;
 	data.uploadQuota = data.peakQuota;
+	data.miscQuota = data.peakQuota;
 	
 	var peakDlRegex = /<dt>Total Downloads<\/dt>\s*<dd>([\d\.]+?) GB<\/dd>/;
 	result = peakDlRegex.exec(text);
@@ -62,6 +63,16 @@ function processData(xml, text) {
 		return data;
 	}
 	data.upload = result[1];
+	
+	var totalUsageRegex = /<dt>Total Usage<\/dt>\s*<dd>([\d\.]+?) GB<\/dd>/;
+	result = totalUsageRegex.exec(text);
+	if (result == null) {
+		data.loaded = false;
+		data.error = "Total Usage information not found";
+		return data;
+	}
+	data.miscUsage = result[1];
+	data.miscName = "Total";
 	
 	var datesRegex = /<dt>Period<\/dt>\s*<dd>([\d\/]+?) - ([\d\/]+?)<\/dd>/;
 	result = datesRegex.exec(text);

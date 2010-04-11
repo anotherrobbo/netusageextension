@@ -42,20 +42,27 @@
 					arrow.style.left = timePercent + "%";
 					
 					//update info table
-					var user = document.getElementById("user");
-					var plan = document.getElementById("plan");
-					var peakDl = document.getElementById("peakDl");
-					var offpeakDl = document.getElementById("offpeakDl");
-					var upload = document.getElementById("upload");
-					var lastReset = document.getElementById("lastReset");
-					var timeRemaining = document.getElementById("timeRemaining");
-					user.innerHTML = data.user;
-					plan.innerHTML = data.plan;
-					peakDl.innerHTML = data.peakDl + "/" + data.peakQuota + data.unit + " (" + data.peakPct + "%)";
-					offpeakDl.innerHTML = data.offpeakDl + "/" + data.offpeakQuota + data.unit + " (" + data.offpeakPct + "%)";
-					upload.innerHTML = data.upload + "/" + data.uploadQuota + data.unit + " (" + data.uploadPct + "%)";
-					lastReset.innerHTML = data.lastReset;
-					timeRemaining.innerHTML = data.daysRemaining + "d " + data.hoursRemaining + "h";
+					removeAllChildren(infoContainer);
+					if (data.user) {
+						addInfoRow(infoContainer, "User:", data.user);
+					}
+					if (data.plan) {
+						addInfoRow(infoContainer, "Plan:", data.plan);
+					}
+					if (data.peakDl) {
+						addInfoRow(infoContainer, "Peak DL:", data.peakDl + "/" + data.peakQuota + data.unit + " (" + data.peakPct + "%)");
+					}
+					if (data.offpeakDl) {
+						addInfoRow(infoContainer, "Off-Peak DL:", data.offpeakDl + "/" + data.offpeakQuota + data.unit + " (" + data.offpeakPct + "%)");
+					}
+					if (data.upload) {
+						addInfoRow(infoContainer, "Upload:", data.upload + "/" + data.uploadQuota + data.unit + " (" + data.uploadPct + "%)");
+					}
+					if (data.miscUsage) {
+						addInfoRow(infoContainer, data.miscName + ":", data.miscUsage + "/" + data.miscQuota + data.unit + " (" + data.miscPct + "%)");
+					}
+					addInfoRow(infoContainer, "Last Reset:", data.lastReset);
+					addInfoRow(infoContainer, "Time Remaining:", data.daysRemaining + "d " + data.hoursRemaining + "h");
 					
 					errorContainer.style.display = "none";
 					graphContainer.style.display = "block";
@@ -76,6 +83,29 @@
 				} else {
 					loading.style.display = "none";
 				}
+			}
+
+			function addInfoRow(container, label, value) {
+				var infoRow = document.createElement("div");
+				infoRow.className = "infoRow";
+
+				var infoLabel = document.createElement("div");
+				infoLabel.className = "infoLabel";
+				infoLabel.innerHTML = label;
+				infoRow.appendChild(infoLabel);
+
+				var infoValue = document.createElement("div");
+				infoValue.className = "infoValue";
+				infoValue.innerHTML = value;
+				infoRow.appendChild(infoValue);
+
+				container.appendChild(infoRow);
+				/*
+				<div class="infoRow">
+					<div class="infoLabel">User:</div>
+					<div id="user" class="infoValue"></div>		
+				</div>
+				*/
 			}
 		</script>
 	</head>
@@ -100,34 +130,6 @@
 		</div>
 		<div class="row">
 			<div id="infoContainer" class="infoContainer">
-				<div class="infoRow">
-					<div class="infoLabel">User:</div>
-					<div id="user" class="infoValue"></div>		
-				</div>
-				<div class="infoRow">
-					<div class="infoLabel">Plan:</div>
-					<div id="plan" class="infoValue"></div>		
-				</div>
-				<div class="infoRow">
-					<div class="infoLabel">Peak DL:</div>
-					<div id="peakDl" class="infoValue"></div>		
-				</div>
-				<div class="infoRow">
-					<div class="infoLabel">Off-peak DL:</div>
-					<div id="offpeakDl" class="infoValue"></div>		
-				</div>
-				<div class="infoRow">
-					<div class="infoLabel">Upload:</div>
-					<div id="upload" class="infoValue"></div>		
-				</div>
-				<div class="infoRow">
-					<div class="infoLabel">Last Reset:</div>
-					<div id="lastReset" class="infoValue"></div>		
-				</div>
-				<div class="infoRow">
-					<div class="infoLabel">Time Remaining:</div>
-					<div id="timeRemaining" class="infoValue"></div>		
-				</div>
 			</div>
 		</div>
 	</body>

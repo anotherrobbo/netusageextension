@@ -1,4 +1,6 @@
 Version 0.2.0:
+Added support for datablocks, now added to quota.
+Added Newsgroup usage to Adam info.
 Added Orcon (NZ) support.
 Added Automatic refresh on configurable interval.
 Fixed bug where extension would hang if initial setup was not performed.
