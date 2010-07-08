@@ -91,13 +91,13 @@ div.graph div {
 	position:absolute;
 }
 
-div.peak {
+div.graph1 {
 	width: 0px;
 	height: 12px;
 	background-image: url("../images/peak.png");
 }
 
-div.offpeak {
+div.graph2 {
 	width: 0px;
 	height: 6px;
 	top: 6px;
@@ -118,11 +118,11 @@ div.arrow {
 	background-image: url("../images/arrowDown.png");
 }
 
-div#peakPercent {
+div#graph1Percent {
 	right: 2px;
 }
 
-div#offpeakPercent {
+div#graph2Percent {
 	left: 2px;
 }
 

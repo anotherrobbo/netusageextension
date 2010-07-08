@@ -42,6 +42,10 @@ function processData(xml, text) {
 	}	
 }
 
+function getUsageTypes() {
+	return [["Peak DL","Peak DL"], ["OffPeak DL","OffPeak DL"], ["Upload","Upload"], ["Newsgroup","Newsgroup"]];
+}
+
 function loadAccount(account) {
 	var data = new UsageData();
 	data.user = account.getAttribute("username");
@@ -50,19 +54,23 @@ function loadAccount(account) {
 	data.plan = planType + " " + planSpeed;
 	data.unit = "MB";
 	
+	data.usageTypes["Peak DL"] = new UsageType();
+	data.usageTypes["OffPeak DL"] = new UsageType();
+	data.usageTypes["Upload"] = new UsageType();
+	data.usageTypes["Newsgroup"] = new UsageType();
+	
 	var quota = account.getElementsByTagName("MegabyteQuota")[0].textContent;
 	var datablocks = account.getElementsByTagName("MegabyteDatablocks")[0].textContent;
-	data.peakQuota = parseInt(quota) + parseInt(datablocks);
-	data.offpeakQuota = data.peakQuota;
-	data.uploadQuota = data.peakQuota;
-	data.miscQuota = account.getElementsByTagName("NewsgroupQuota")[0].textContent;
-	data.miscName = "Newsgroup";
+	data.usageTypes["Peak DL"].quota = parseInt(quota) + parseInt(datablocks);
+	data.usageTypes["OffPeak DL"].quota = data.usageTypes["Peak DL"].quota;
+	data.usageTypes["Upload"].quota = data.usageTypes["Peak DL"].quota;
+	data.usageTypes["Newsgroup"].quota = account.getElementsByTagName("NewsgroupQuota")[0].textContent;
 	
 	var usage = account.getElementsByTagName("Usage")[0];
-	data.peakDl = usage.getElementsByTagName("MegabytesDownloadedPeak")[0].textContent;
-	data.offpeakDl = usage.getElementsByTagName("MegabytesDownloadedOffPeak")[0].textContent;
-	data.upload = usage.getElementsByTagName("MegabytesUploadedTotal")[0].textContent;
-	data.miscUsage = usage.getElementsByTagName("MegabytesNewsgroupTotal")[0].textContent;
+	data.usageTypes["Peak DL"].usage = usage.getElementsByTagName("MegabytesDownloadedPeak")[0].textContent;
+	data.usageTypes["OffPeak DL"].usage = usage.getElementsByTagName("MegabytesDownloadedOffPeak")[0].textContent;
+	data.usageTypes["Upload"].usage = usage.getElementsByTagName("MegabytesUploadedTotal")[0].textContent;
+	data.usageTypes["Newsgroup"].usage = usage.getElementsByTagName("MegabytesNewsgroupTotal")[0].textContent;
 	
 	var lastResetDate = parseAdamDate(account.getElementsByTagName("QuotaStartDate")[0].textContent);
 	data.lastReset = formatDate(lastResetDate);
