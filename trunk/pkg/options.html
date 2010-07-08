@@ -41,6 +41,8 @@
 				for (var i = 0, option; option = options[i]; i++) {
 					if ("select" == option.type) {
 						addCustomField(option.label, createSelectField(option.id, option.values));
+					} else if ("check" == option.type) {
+						addCustomField(option.label, createCheckboxField(option.id));
 					} else {
 						addCustomField(option.label, createField(option.id));
 					}
@@ -51,11 +53,18 @@
 			function createSelectField(fieldId, values) {
 				var field = document.createElement("select");
 				field.id = fieldId;
-				for (var i = 0, value; value = values[i]; i++) {
-					var option = document.createElement("option");
-					option.value = value[0];
-					option.innerHTML = value[1];
-					field.appendChild(option);
+				var option = document.createElement("option");
+				option.value = null;
+				option.innerHTML = "--- Pick an Option ---";
+				field.appendChild(option);
+				// when country is not selected, values is undefined
+				if (values) {
+					for (var i = 0, value; value = values[i]; i++) {
+						var option = document.createElement("option");
+						option.value = value[0];
+						option.innerHTML = value[1];
+						field.appendChild(option);
+					}
 				}
 				field.className = "field"
 				/*
@@ -63,6 +72,14 @@
 					<option class="field" value="adam">Adam Internet</option>
 				</select>
 				*/
+				return field;
+			}
+			
+			function createCheckboxField(fieldId) {
+				var field = document.createElement("input");
+				field.type = "checkbox";
+				field.id = fieldId;
+				field.className = "field";
 				return field;
 			}
 			
@@ -116,10 +133,10 @@
 				newIspField.onchange = function() {ispChanged(this.value);};
 				ispField.parentNode.replaceChild(newIspField, ispField);
 				// default to first in array
-				newIspField.value = isps[localStorage["country"]][0][0];
-				if (newIspField.onchange) {
-					newIspField.onchange();
-				}
+				//newIspField.value = isps[localStorage["country"]][0][0];
+				//if (newIspField.onchange) {
+				//	newIspField.onchange();
+				//}
 			}
 			
 			function ispChanged(isp) {

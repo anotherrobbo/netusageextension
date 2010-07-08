@@ -23,18 +23,30 @@
 				if (!background.failureReason) {
 					// Perform date calcs each load so they are correct against the time now.
 					doDataDateCalc(data);
+
+					var graph1UsageType = localStorage["graph1"];
+					var graph1Usage = data.usageTypes[graph1UsageType];
+
+					var graph2UsageType = localStorage["graph2"];
+					var graph2Usage = data.usageTypes[graph2UsageType];
 					
 					// update graph
-					var peak = document.getElementById("peak");
-					var peakPercent = document.getElementById("peakPercent");
-					peak.style.width = data.peakPct + "%";
-					peakPercent.innerHTML = data.peakPct + "%";
-					
-					if (data.offpeakDl) {
-						var offpeak = document.getElementById("offpeak");
-						var offpeakPercent = document.getElementById("offpeakPercent");
-						offpeak.style.width = data.offpeakPct + "%";
-						offpeakPercent.innerHTML = data.offpeakPct + "%";
+					if (graph1Usage) {
+						var graph1 = document.getElementById("graph1");
+						var graph1Percent = document.getElementById("graph1Percent");
+						graph1.style.width = graph1Usage.pct + "%";
+						//if (localStorage["graphText"]) {
+							graph1Percent.innerHTML = graph1Usage.pct + "%";
+						//}
+					}
+
+					if (graph2Usage) {
+						var graph2 = document.getElementById("graph2");
+						var graph2Percent = document.getElementById("graph2Percent");
+						graph2.style.width = graph2Usage.pct + "%";
+						//if (localStorage["graphText"]) {
+							graph2Percent.innerHTML = graph2Usage.pct + "%";
+						//}
 					}
 					
 					var timePercent = Math.round((data.totalDays - data.daysRemaining) / data.totalDays * 100);
@@ -49,17 +61,9 @@
 					if (data.plan) {
 						addInfoRow(infoContainer, "Plan:", data.plan);
 					}
-					if (data.peakDl) {
-						addInfoRow(infoContainer, "Peak DL:", data.peakDl + " / " + data.peakQuota + " " + data.unit + " (" + data.peakPct + "%)");
-					}
-					if (data.offpeakDl) {
-						addInfoRow(infoContainer, "Off-Peak DL:", data.offpeakDl + " / " + data.offpeakQuota + " " + data.unit + " (" + data.offpeakPct + "%)");
-					}
-					if (data.upload) {
-						addInfoRow(infoContainer, "Upload:", data.upload + " / " + data.uploadQuota + " " + data.unit + " (" + data.uploadPct + "%)");
-					}
-					if (data.miscUsage) {
-						addInfoRow(infoContainer, data.miscName + ":", data.miscUsage + " / " + data.miscQuota + " " + data.unit + " (" + data.miscPct + "%)");
+					for (usageType in data.usageTypes) {
+						theUsage = data.usageTypes[usageType]
+						addInfoRow(infoContainer, usageType + ":", theUsage.usage + " / " + theUsage.quota + " " + data.unit + " (" + theUsage.pct + "%)");
 					}
 					addInfoRow(infoContainer, "Last Reset:", data.lastReset);
 					addInfoRow(infoContainer, "Time Remaining:", data.daysRemaining + "d " + data.hoursRemaining + "h");
@@ -123,11 +127,11 @@
 		<div class="row">
 			<div id="graphContainer" class="graphContainer">
 				<div id="graph" class="graph">
-					<div id="peak" class="peak"></div>
-					<div id="offpeak" class="offpeak"></div>
+					<div id="graph1" class="graph1"></div>
+					<div id="graph2" class="graph2"></div>
 					<div id="arrow" class="arrow"></div>
-					<div id="peakPercent" class="percent"></div>
-					<div id="offpeakPercent" class="percent"></div>				
+					<div id="graph1Percent" class="percent"></div>
+					<div id="graph2Percent" class="percent"></div>				
 				</div>
 			</div>
 			<div id="errorContainer" class="errorContainer"> 

@@ -86,16 +86,20 @@
 			
 			function success(data) {
 				failureReason = undefined;
-				chrome.browserAction.setBadgeText({text:data.peakPct + "%"});
+				var graph1UsageType = localStorage["graph1"];
+				var graph1Usage = data.usageTypes[graph1UsageType];
+				chrome.browserAction.setBadgeText({text:graph1Usage.pct + "%"});
 				if (data.peakPct >= 90) {
 					chrome.browserAction.setBadgeBackgroundColor({color:[255,0,0,255]});
 				} else {
 					chrome.browserAction.setBadgeBackgroundColor({color:[0,128,0,255]});
 				}
 				chrome.browserAction.setIcon({path:"images/icon19.png"});
-				var title = "Peak: " + data.peakDl + "/" + data.peakQuota + data.unit + " (" + data.peakPct + "%)";
-				if (data.offpeakDl) {
-					title += "\nOffPeak: " + data.offpeakDl + "/" + data.offpeakQuota + data.unit + " (" + data.offpeakPct + "%)";
+				var title = graph1UsageType + ": " + graph1Usage.usage + "/" + graph1Usage.quota + data.unit + " (" + graph1Usage.pct + "%)";
+                var graph2UsageType = localStorage["graph2"];
+				if (graph2UsageType) {
+					var graph2Usage = data.usageTypes[graph2UsageType];
+					title += "\n" + graph2UsageType + ": " + graph2Usage.usage + "/" + graph2Usage.quota + data.unit + " (" + graph2Usage.pct + "%)";
 				}
 				title += "\nClick for more details"
 				chrome.browserAction.setTitle({title:title});

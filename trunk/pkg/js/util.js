@@ -23,26 +23,7 @@ function UsageData() {
 	this.plan;
 	this.unit;
 
-	this.peakQuota;
-	this.peakDl;
-	this.peakPct;
-	this.peakRemaining;
-	
-	this.offpeakQuota;
-	this.offpeakDl;
-	this.offpeakPct;
-	this.offpeakRemaining;
-	
-	this.uploadQuota;
-	this.upload;
-	this.uploadPct;
-	this.uploadRemaining;
-	
-	this.miscQuota;
-	this.miscUsage;
-	this.miscPct;
-	this.miscRemaining;
-	this.miscName;
+	this.usageTypes = new Array();
 	
 	this.lastReset;
 	this.nextReset;
@@ -55,16 +36,19 @@ function UsageData() {
 	this.error = "";
 }
 
+function UsageType() {
+	this.quota;
+	this.usage;
+	this.pct;
+	this.remaining;
+}
+
 function doDataPctCalc(data) {
-	data.peakPct = Math.round(data.peakDl / data.peakQuota * 100);
-	data.offpeakPct = Math.round(data.offpeakDl / data.offpeakQuota * 100);
-	data.uploadPct = Math.round(data.upload / data.uploadQuota * 100);
-	data.miscPct = Math.round(data.miscUsage / data.miscQuota * 100);
-	
-	data.peakRemaining = data.peakQuota - data.peakDl;
-	data.offpeakRemaining = data.offpeakQuota - data.offpeakDl;
-	data.uploadRemaining = data.uploadQuota - data.uploadDl;
-	data.miscRemaining = data.miscQuota - data.miscDl;
+	for (usageType in data.usageTypes) {
+		theUsage = data.usageTypes[usageType]
+		theUsage.pct = Math.round(theUsage.usage / theUsage.quota * 100);
+		theUsage.remaining = theUsage.quota - theUsage.usage;
+	}
 }
 
 function doDataDateCalc(data) {
@@ -127,6 +111,7 @@ function loadObject(key) {
 function getBasicOptions() {
 	var options = [];
 	var count = options.length;
+	//options[count++] = new Option("check", "Show Percentage on Graph", "graphText");
 	options[count++] = new Option("select", "Auto Refresh", "refresh", 
 			[[0, "Never"]
 		   ,[300000, "5 Minutes"]
@@ -138,6 +123,8 @@ function getBasicOptions() {
 		   ,[43200000, "12 Hours"]
 		   ,[86400000, "24 Hours"]
 		    ]);
+	options[count++] = new Option("select", "Graph 1", "graph1", getUsageTypes());
+	options[count++] = new Option("select", "Graph 2", "graph2", getUsageTypes());
 	return options;
 }
 
