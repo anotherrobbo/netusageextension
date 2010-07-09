@@ -23,7 +23,7 @@ function UsageData() {
 	this.plan;
 	this.unit;
 
-	this.usageTypes = new Array();
+	this.usageTypes = new Object();
 	
 	this.lastReset;
 	this.nextReset;
