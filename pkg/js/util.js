@@ -13,6 +13,7 @@ function Option(type, label, id, values) {
 function ConnectionDetails() {
 	this.action = "";
 	this.url = "";
+	this.params = null;
 	this.loaded = false;
 	this.error = "";
 }

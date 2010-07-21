@@ -16,5 +16,7 @@
 	"permissions": [
 		"https://members.adam.com.au/um2.1/"
 		,"https://www.orcon.net.nz/modules/usagemeter/view/"
+		,"https://signon.bigpond.com/login"
+		,"https://my.bigpond.com/mybigpond/myaccount/myusage/default.do"
 	]
 }
