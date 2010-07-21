@@ -16,7 +16,6 @@ function getCustomOptions() {
 	var count = options.length;
 	options[count++] = new Option("input", "Username", "username");
 	options[count++] = new Option("input", "Password", "password");
-	options[count++] = new Option("input", "Quota (MB)", "quota");
 	return options;
 }
 
@@ -50,8 +49,19 @@ function processData(xml, text) {
 	
 	data.usageTypes["Total Usage"] = new UsageType();
 	
-	var quota = localStorage["quota"];
-	data.usageTypes["Total Usage"].quota = quota;
+	var currentAllowanceRegex =
+		/<td nowrap="nowrap" style="vertical-align:bottom">Current Usage Allowance:<\/td>\s*<td colspan="2" style="vertical-align:bottom">(\d+)([MG]B)[^<>]*<\/td>/;
+	result = currentAllowanceRegex.exec(text);
+	if (result == null) {
+		data.loaded = false;
+		data.error = "Current Usage Allowance not found";
+		return data;
+	}
+	var currentAllowance = parseInt(result[1].replace(/\,/g,''));
+	if (result[2] == 'GB') {
+		currentAllowance *= 1024; // I think Telstra treats 1GB = 1024MB
+	}
+	data.usageTypes["Total Usage"].quota = currentAllowance;
 	
 	var totalUsageRegex = /<td nowrap="nowrap" style="vertical-align:bottom">Current Account Usage<sup><a href="#footnote2">2<\/a><\/sup>:<\/td>\s*<td colspan="2" style="vertical-align:bottom"><strong>([\d,]+)MB<\/strong><\/td>/;
 	result = totalUsageRegex.exec(text);
@@ -76,25 +86,6 @@ function processData(xml, text) {
 	var nextResetDate = new Date(result[2]);
 	data.nextReset = formatDate(nextResetDate);
 
-	var currentAllowanceRegex =
-		/<td nowrap="nowrap" style="vertical-align:bottom">Current Usage Allowance:<\/td>\s*<td colspan="2" style="vertical-align:bottom">(\d+)([MG]B)[^<>]*<\/td>/;
-	result = currentAllowanceRegex.exec(text);
-	if (result == null) {
-		data.loaded = false;
-		data.error = "Current Usage Allowance not found";
-		return data;
-	}
-	var currentAllowance = parseInt(result[1].replace(/\,/g,''));
-	if (result[2] == 'GB') {
-		currentAllowance *= 1024; // I think Telstra treats 1GB = 1024MB
-	}
-	data.peakQuota = localStorage["quota"];
-	if (!data.peakQuota || data.peakQuota == 0 || data.peakQuota == '') {
-		data.peakQuota = currentAllowance;
-	}
-	data.uploadQuota = data.peakQuota;
-	data.miscQuota = data.peakQuota;
-	
 	doDataPctCalc(data);
 	
 	data.loaded = true;
