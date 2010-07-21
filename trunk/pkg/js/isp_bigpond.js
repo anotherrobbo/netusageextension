@@ -16,6 +16,7 @@ function getCustomOptions() {
 	var count = options.length;
 	options[count++] = new Option("input", "Username", "username");
 	options[count++] = new Option("input", "Password", "password");
+	options[count++] = new Option("input", "Quota (MB)", "quota");
 	return options;
 }
 
@@ -58,10 +59,14 @@ function processData(xml, text) {
 		return data;
 	}
 	var currentAllowance = parseInt(result[1].replace(/\,/g,''));
-	if (result[2] == 'GB') {
+	if (result[2] == "GB") {
 		currentAllowance *= 1024; // I think Telstra treats 1GB = 1024MB
 	}
-	data.usageTypes["Total Usage"].quota = currentAllowance;
+	var quota = localStorage["quota"];
+	if (!quota || quota == 0 || quota == "") {
+		quota = currentAllowance;
+	}
+	data.usageTypes["Total Usage"].quota = quota;
 	
 	var totalUsageRegex = /<td nowrap="nowrap" style="vertical-align:bottom">Current Account Usage<sup><a href="#footnote2">2<\/a><\/sup>:<\/td>\s*<td colspan="2" style="vertical-align:bottom"><strong>([\d,]+)MB<\/strong><\/td>/;
 	result = totalUsageRegex.exec(text);
