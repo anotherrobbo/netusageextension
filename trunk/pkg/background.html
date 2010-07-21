@@ -47,7 +47,7 @@
 							req.abort();
 							fail("Failed to get usage data<br>Request timed out<br>Please check settings in Options");
 						}
-					}, 5000);
+					}, 15000);
 					
 					req.open(
 						details.action
@@ -71,7 +71,12 @@
 							fail("Failed to get usage data<br>Request returned status of " + req.status + "<br>Please check settings in Options");
 						}
 					}
-					req.send(null);
+					if (details.action == "POST") {
+						req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+						req.send(details.params);
+					} else {
+						req.send(null);
+					}
 				} else {
 					fail("Failed to load required settings<br>" + details.error + "<br>Please set up in Options");
 				}
