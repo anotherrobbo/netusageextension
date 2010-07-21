@@ -5,6 +5,7 @@ MUST implement the following methods:
 getCustomOptions (returns an array of Option Objects)
 getConnectionDetails (returns a ConnectionDetails Object)
 processData(xml, text) (processes the supplied input data to return a UsageData Object)
+getUsageTypes() (returns the different Usage Types available in this ISPs data)
 
 See util.js for details on individual Objects
 */
