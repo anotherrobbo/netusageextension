@@ -28,7 +28,7 @@ function getConnectionDetails() {
 	details.url = debug ? "bigpond.html" : "https://signon.bigpond.com/login";
 	details.loaded = username && password;
 	if (details.loaded) {
-		details.params = "username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&goto=https://my.bigpond.com/mybigpond/myaccount/myusage/default.do";
+		details.params = "username=" + encodeURIComponent(username) + "&password=" + encodeURIComponent(password) + "&goto=" + encodeURIComponent("https://my.bigpond.com/");
 	} else {
 		details.error = "Username or Password missing"
 	}
