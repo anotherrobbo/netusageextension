@@ -20,6 +20,16 @@ div.errorContainer {
 	color: #aa0000;
 }
 
+.showHideLink {
+	text-decoration: underline;
+	font-size: 10px;
+	cursor: pointer;	
+}
+
+.errTxt {
+	display: none;	
+}
+
 div.loading {
 	position: absolute;
 	width: 100%;
