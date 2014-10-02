@@ -1,4 +1,5 @@
 var debug = false;
+var blankOption = "--- Pick an Option ---";
 
 // OBJECT DEFINITIONS
 // An option to be set on the Extension Options page.
@@ -42,6 +43,15 @@ function UsageType() {
 	this.usage;
 	this.pct;
 	this.remaining;
+}
+
+function getDisplayUsage(usageType, unit) {
+	displayUnit = localStorage["displayUnit"];
+	if (!displayUnit || displayUnit == blankOption) {
+		displayUnit = unit;
+	}
+	return convertUnits(unit, displayUnit, usageType.usage) + " / " + 
+	convertUnits(unit, displayUnit, usageType.quota) + " " + displayUnit + " (" + usageType.pct + "%)";
 }
 
 function doDataPctCalc(data) {
@@ -112,6 +122,12 @@ function loadObject(key) {
 function getBasicOptions() {
 	var options = [];
 	var count = options.length;
+	// Unit dropdown field
+	options[count++] = new Option("select", "Display Units", "displayUnit", 
+			[["B","Bytes (B)",1],
+	        ["MB","Megabytes (MB)",3],
+	        ["GB","Gigabytes (GB)",6]
+	        ]);
 	//options[count++] = new Option("check", "Show Percentage on Graph", "graphText");
 	options[count++] = new Option("select", "Auto Refresh", "refresh", 
 			[[0, "Never"]
@@ -207,6 +223,24 @@ function getRemainingFromNext(date) {
 		remaining.hours = 0;
 	}
 	return remaining;
+}
+
+function convertUnits(fromUnits, toUnits, data) {
+	var units = new Object()
+	units["B"] = 0;
+	units["MB"] = 6;
+	units["GB"] = 9;
+	from = units[fromUnits];
+	to = units[toUnits];
+	diff = from - to;
+	console.log(diff);
+	if (diff < 1) {
+		return Math.round(data / Math.pow(10, Math.abs(diff)));
+	} else if (diff > 1) {
+		return data * Math.pow(10, diff);
+	} else {
+		return data;
+	}
 }
 
 // DOM RELATED HELPERS

@@ -63,7 +63,7 @@
 					}
 					for (usageType in data.usageTypes) {
 						theUsage = data.usageTypes[usageType]
-						addInfoRow(infoContainer, usageType + ":", theUsage.usage + " / " + theUsage.quota + " " + data.unit + " (" + theUsage.pct + "%)");
+						addInfoRow(infoContainer, usageType + ":", getDisplayUsage(theUsage, data.unit));
 					}
 					addInfoRow(infoContainer, "Last Reset:", data.lastReset);
 					addInfoRow(infoContainer, "Time Remaining:", data.daysRemaining + "d " + data.hoursRemaining + "h");

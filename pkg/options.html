@@ -8,8 +8,11 @@
 		
 			var countries = [["au","Australia"], ["nz","New Zealand"]];
 			var isps = new Object();
-			isps.au = [["adam","Adam Internet"], ["bigpond","BigPond"], ["optusnet","OptusNet"]];
-					 //, ["exetel","Exetel"]];
+			isps.au = [["adam","Adam Internet"]
+					//, ["bigpond","BigPond"]
+					//, ["optusnet","OptusNet"]
+				    //, ["exetel","Exetel"]
+					];
 			isps.nz = [["orcon","Orcon"]];
 		
 			function createOptions() {
@@ -56,7 +59,7 @@
 				field.id = fieldId;
 				var option = document.createElement("option");
 				option.value = null;
-				option.innerHTML = "--- Pick an Option ---";
+				option.innerHTML = blankOption;
 				field.appendChild(option);
 				// when country is not selected, values is undefined
 				if (values) {

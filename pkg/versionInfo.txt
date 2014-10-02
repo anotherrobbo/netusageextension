@@ -1,8 +1,8 @@
 Version 0.3.0:
 Refactored for greater customisation of usageTypes.
-Added BigPond support. - Sean Flanigan <sean@flanigan.org>
+Updated for new Adam API
 
-Version 0.2.1:
+Version 0.2.2:
 Fixed bug in Date handling code, affecting Dates prior to the 10th each month.
 
 Version 0.2.0:

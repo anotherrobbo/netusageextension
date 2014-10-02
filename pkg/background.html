@@ -94,17 +94,17 @@
 				var graph1UsageType = localStorage["graph1"];
 				var graph1Usage = data.usageTypes[graph1UsageType];
 				chrome.browserAction.setBadgeText({text:graph1Usage.pct + "%"});
-				if (data.peakPct >= 90) {
+				if (graph1Usage.pct >= 90) {
 					chrome.browserAction.setBadgeBackgroundColor({color:[255,0,0,255]});
 				} else {
 					chrome.browserAction.setBadgeBackgroundColor({color:[0,128,0,255]});
 				}
 				chrome.browserAction.setIcon({path:"images/icon19.png"});
-				var title = graph1UsageType + ": " + graph1Usage.usage + "/" + graph1Usage.quota + data.unit + " (" + graph1Usage.pct + "%)";
+				var title = graph1UsageType + ": " + getDisplayUsage(graph1Usage, data.unit);
                 var graph2UsageType = localStorage["graph2"];
-				if (graph2UsageType) {
+				if (graph2UsageType && graph2UsageType != blankOption) {
 					var graph2Usage = data.usageTypes[graph2UsageType];
-					title += "\n" + graph2UsageType + ": " + graph2Usage.usage + "/" + graph2Usage.quota + data.unit + " (" + graph2Usage.pct + "%)";
+					title += "\n" + graph2UsageType + ": " + getDisplayUsage(graph2Usage, data.unit);
 				}
 				title += "\nClick for more details"
 				chrome.browserAction.setTitle({title:title});
