@@ -65,7 +65,7 @@
 								storeObject("data", data);
 								success(data);
 							} else {
-								fail("Failed to get usage data<br>Invalid usage data returned from server<br>" + data.error + "<br>Please check settings in Options");
+								fail("Failed to get usage data<br>Invalid usage data returned from server<br>" + data.error + "<br>Please check settings in Options<br><br><span class='showHideLink' onclick='javascript:showErrTxt()'>show</span><div class='errTxt' id='errTxt'>" + req.responseText + "</div>");
 							}
 						} else {
 							fail("Failed to get usage data<br>Request returned status of " + req.status + "<br>Please check settings in Options");

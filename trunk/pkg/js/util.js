@@ -217,3 +217,8 @@ function removeAllChildren(node) {
 		}
 	}
 }
+
+// SHOW/HIDE the error causing response
+function showErrTxt() {
+	document.getElementById("errTxt").style = "display: block;";
+}
