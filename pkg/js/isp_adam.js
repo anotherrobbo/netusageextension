@@ -14,81 +14,121 @@ function getCustomOptions() {
 	// make a call to function in util.js
 	var options = getBasicOptions();
 	var count = options.length;
-	options[count++] = new Option("input", "Token", "token");
+	options[count++] = new Option("input", "Username<br>(including @adam.com.au)", "username");
+	options[count++] = new Option("input", "Password", "password");
 	return options;
 }
 
 function getConnectionDetails() {
 	var details = new ConnectionDetails();
 	details.action = "GET";
-	token = localStorage["token"];
-	details.url = debug ? "adam.xml" : "https://:" + token + "@members.adam.com.au/api/";
-	details.loaded = token;
+	username = localStorage["username"];
+	password = localStorage["password"];
+	details.url = debug ? "adam.json" : "https://toolbox.iinet.net.au/cgi-bin/api.cgi?_USERNAME=" + username + "&_PASSWORD=" + password;
+	details.loaded = username && password;
 	if (!details.loaded) {
-		details.error = "Token missing"
+		details.error = "Username / Password missing"
 	}
 	return details;
 }
 
-function getXml(xml, tagName, attrName, attrValue) {
-	var items = xml.getElementsByTagName(tagName);
-
-	for (var i = 0, item; item = items[i]; i++) {
-		var type = item.getAttribute(attrName);
-		if (attrValue == type) {
-			return item;
-		}
-	}	
-}
-
 function processData(xml, text) {
-	account = getXml(xml, "Account", "type", "ADSL");
-	return loadAccount(account);
+	reply = JSON.parse(text);
+	if (reply.success) {
+		service = loadService(reply);
+		if (service.error) {
+			return service;
+		}
+		return loadServiceUsage(service);
+	} else {
+		return createFailure(reply);
+	}
 }
 
 function getUsageTypes() {
-	return [["Download","Download"], ["Newsgroup","Newsgroup"]];
+	return [["Download","Download"]];//, ["Newsgroup","Newsgroup"]];
 }
 
-function loadAccount(account) {
+function loadService(reply) {
+	token = reply.token;
+	service = findService(reply.response);
+	stoken = service.s_token;
+	url = "https://toolbox.iinet.net.au/cgi-bin/api.cgi?Usage&_TOKEN=" + token + "&_SERVICE=" + stoken;
+	responseText = callURL(url);
+	reply = JSON.parse(responseText);
+	if (reply.success) {
+		response = reply.response
+		response.user = service.pk_v;
+		return response;
+	} else {
+		return createFailure(reply);
+	}
+}
+
+function loadServiceUsage(service) {
 	var data = new UsageData();
-	data.user = account.getAttribute("username");
-	var planName = account.getElementsByTagName("PlanName")[0].textContent;
-	var planType = account.getElementsByTagName("PlanType")[0].textContent;
-	var planSpeed = account.getElementsByTagName("PlanSpeed")[0].textContent;
+	data.user = service.user;
+	var planName = service.account_info.plan;
+	var planType = null;//account.getElementsByTagName("PlanType")[0].textContent;
+	var planSpeed = null;//account.getElementsByTagName("PlanSpeed")[0].textContent;
 	data.plan = planName;// + "<br/>" + planType + " " + planSpeed;
 	data.unit = "B";
 	
 	data.usageTypes["Download"] = new UsageType();
-	data.usageTypes["Newsgroup"] = new UsageType();
+	//data.usageTypes["Newsgroup"] = new UsageType();
 	
-	var dloadBucket = getXml(account, "Bucket", "desc", "Download");
-	var newsgroupBucket = getXml(account, "Bucket", "desc", "Newsgroups");
+	var anytime = getTrafficType(service.usage.traffic_types, "anytime");
+	var uploads = getTrafficType(service.usage.traffic_types, "uploads");
+	var freezone = getTrafficType(service.usage.traffic_types, "freezone");
 
-	var quota = dloadBucket.getElementsByTagName("Quota")[0].textContent;
-	var datablocks = account.getElementsByTagName("Datablocks")[0].textContent;
-	data.usageTypes["Download"].quota = parseInt(quota) + parseInt(datablocks);
-	data.usageTypes["Newsgroup"].quota = newsgroupBucket.getElementsByTagName("Quota")[0].textContent;
-	
-	data.usageTypes["Download"].usage = dloadBucket.getElementsByTagName("Usage")[0].textContent;
-	data.usageTypes["Newsgroup"].usage = newsgroupBucket.getElementsByTagName("Usage")[0].textContent;
-	
-	var lastResetDate = parseAdamDate(account.getElementsByTagName("QuotaStartDate")[0].textContent);
+
+	data.usageTypes["Download"].quota = anytime.allocation;
+//	data.usageTypes["Newsgroup"].quota = newsgroupBucket.getElementsByTagName("Quota")[0].textContent;
+
+	data.usageTypes["Download"].usage = anytime.used;
+//	data.usageTypes["Newsgroup"].usage = newsgroupBucket.getElementsByTagName("Usage")[0].textContent;
+
+	var anniversary = service.quota_reset.anniversary;
+	var now = new Date();
+	var month = now.getDate() < anniversary ? now.getMonth() - 1 : now.getMonth();
+	var year = now.getMonth() < month ? now.getFullYear() - 1 : now.getFullYear();
+
+	var lastResetDate = new Date(year, month, anniversary);
 	data.lastReset = formatDate(lastResetDate);
-	
+
 	var nextResetDate = getNextReset(lastResetDate);
 	data.nextReset = formatDate(nextResetDate);
-	
+
 	doDataPctCalc(data);
-	
+
 	data.loaded = true;
 	return data;
 }
 
-function parseAdamDate(dateString) {
-	var year = dateString.substring(0, 4);
-	var month = dateString.substring(5, 7) - 1;
-	var day = dateString.substring(8, 10);
-	var date = new Date(year, month, day);
-	return date;
+function findService(response) {
+	for (s in response.service_list) {
+		service = response.service_list[s];
+		for (a in service.actions) {
+			action = service.actions[a];
+			if (action == "Usage") {
+				return service;
+			}
+		}
+	}
+	return null;
+}
+
+function getTrafficType(traffic_types, typeName) {
+	for (tt in traffic_types) {
+		if (traffic_types[tt].name == typeName) {
+			return traffic_types[tt];
+		}
+	}	
+}
+
+function createFailure(reply) {
+	var data = new UsageData();
+	data.loaded = false;
+	data.error = reply.error;
+	return data;
 }

@@ -1,3 +1,7 @@
+Version 0.4.0:
+Upgrade to new manifest
+Updated for new Adam API (again, newsgroups are no longer supported for now)
+
 Version 0.3.0:
 Refactored for greater customisation of usageTypes.
 Updated for new Adam API
