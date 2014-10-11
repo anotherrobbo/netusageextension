@@ -1,10 +1,15 @@
+Version 0.4.1:
+Fixed link to show response details on error.
+Added additional Adam usage types (Freezone and Uploads).
+Added handling for usage types that have no quota.
+
 Version 0.4.0:
-Upgrade to new manifest
-Updated for new Adam API (again, newsgroups are no longer supported for now)
+Upgrade to new manifest.
+Updated for new Adam API (again, newsgroups are no longer supported for now).
 
 Version 0.3.0:
 Refactored for greater customisation of usageTypes.
-Updated for new Adam API
+Updated for new Adam API.
 
 Version 0.2.2:
 Fixed bug in Date handling code, affecting Dates prior to the 10th each month.
