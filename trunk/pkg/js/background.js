@@ -1,4 +1,5 @@
 var failureReason;
+var failureDetail;
 var updateId;
 
 function updateUsage() {
@@ -59,9 +60,8 @@ function loadData(details) {
 					storeObject("data", data);
 					success(data);
 				} else {
-					fail("Failed to get usage data<br>Invalid usage data returned from server<br>" + data.error
-							+ "<br>Please check settings in Options<br><br><span class='showHideLink' onclick='javascript:showErrTxt()'>show</span><div class='errTxt' id='errTxt'>" + req.responseText
-							+ "</div>");
+					fail("Failed to get usage data<br>Invalid response returned from server<br>" + data.error
+							+ "<br>Please check settings in Options<br><br>", req.responseText);
 				}
 			} else {
 				fail("Failed to get usage data<br>Request returned status of " + req.status + "<br>Please check settings in Options");
@@ -95,29 +95,40 @@ function loading() {
 
 function success(data) {
 	failureReason = undefined;
+	var title = "";
 	var graph1UsageType = localStorage["graph1"];
 	var graph1Usage = data.usageTypes[graph1UsageType];
-	chrome.browserAction.setBadgeText( {
-		text : graph1Usage.pct + "%"
-	});
-	if (graph1Usage.pct >= 90) {
-		chrome.browserAction.setBadgeBackgroundColor( {
-			color : [ 255, 0, 0, 255 ]
+	if (graph1Usage) {
+		chrome.browserAction.setBadgeText( {
+			text : graph1Usage.pct + "%"
 		});
+		if (graph1Usage.pct >= 90) {
+			chrome.browserAction.setBadgeBackgroundColor( {
+				color : [ 255, 0, 0, 255 ]
+			});
+		} else {
+			chrome.browserAction.setBadgeBackgroundColor( {
+				color : [ 0, 128, 0, 255 ]
+			});
+		}
+		title += graph1UsageType + ": " + getDisplayUsage(graph1Usage, data.unit);
+		var graph2UsageType = localStorage["graph2"];
+		var graph2Usage = data.usageTypes[graph2UsageType];
+		if (graph2Usage) {
+			title += "\n" + graph2UsageType + ": " + getDisplayUsage(graph2Usage, data.unit);
+		}
 	} else {
-		chrome.browserAction.setBadgeBackgroundColor( {
-			color : [ 0, 128, 0, 255 ]
+		chrome.browserAction.setBadgeText( {
+			text : "?"
 		});
+		chrome.browserAction.setBadgeBackgroundColor( {
+			color : [ 0, 0, 255, 255 ]
+		});
+		title += "Please set Graph 1 data type in Options"
 	}
 	chrome.browserAction.setIcon( {
 		path : "images/icon19.png"
 	});
-	var title = graph1UsageType + ": " + getDisplayUsage(graph1Usage, data.unit);
-	var graph2UsageType = localStorage["graph2"];
-	var graph2Usage = data.usageTypes[graph2UsageType];
-	if (graph2Usage) {
-		title += "\n" + graph2UsageType + ": " + getDisplayUsage(graph2Usage, data.unit);
-	}
 	title += "\nClick for more details"
 	chrome.browserAction.setTitle( {
 		title : title
@@ -125,9 +136,10 @@ function success(data) {
 	updateViews(data);
 }
 
-function fail(reason) {
+function fail(reason, detail) {
 	console.log("fail: " + reason);
 	failureReason = reason;
+	failureDetail = detail;
 	chrome.browserAction.setBadgeText( {
 		text : "?"
 	});

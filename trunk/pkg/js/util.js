@@ -3,11 +3,12 @@ var blankOption = "--- Pick an Option ---";
 
 // OBJECT DEFINITIONS
 // An option to be set on the Extension Options page.
-function Option(type, label, id, values) {
+function Option(type, label, id, values, defVal) {
 	this.type = type;
 	this.label = label;
 	this.id = id;
 	this.values = values;
+	this.defVal = defVal;
 }
 
 // Connection details used to load UsageData.
@@ -50,8 +51,20 @@ function getDisplayUsage(usageType, unit) {
 	if (!displayUnit || displayUnit == blankOption) {
 		displayUnit = unit;
 	}
-	return convertUnits(unit, displayUnit, usageType.usage) + " / " + 
-	convertUnits(unit, displayUnit, usageType.quota) + " " + displayUnit + " (" + usageType.pct + "%)";
+	var convUsage = convertUnits(unit, displayUnit, usageType.usage);
+	var convQuota = convertUnits(unit, displayUnit, usageType.quota);
+	var convPct = " (" + usageType.pct + "%)";
+	var displayedUsage = convUsage;
+	if (convQuota > 0) {
+		displayedUsage += " / "
+		displayedUsage += convQuota;
+	}
+	displayedUsage += " ";
+	displayedUsage += displayUnit;
+	if (convQuota > 0) {
+		displayedUsage += convPct;
+	}
+	return displayedUsage;
 }
 
 function doDataPctCalc(data) {
@@ -128,7 +141,7 @@ function getBasicOptions() {
 	        ["MB","Megabytes (MB)",3],
 	        ["GB","Gigabytes (GB)",6]
 	        ]);
-	//options[count++] = new Option("check", "Show Percentage on Graph", "graphText");
+	options[count++] = new Option("check", "Show Percentage on Graph", "graphText", null, "true");
 	options[count++] = new Option("select", "Auto Refresh", "refresh", 
 			[[0, "Never"]
 		   ,[300000, "5 Minutes"]
@@ -250,11 +263,6 @@ function removeAllChildren(node) {
 			node.removeChild(node.firstChild);
 		}
 	}
-}
-
-// SHOW/HIDE the error causing response
-function showErrTxt() {
-	document.getElementById("errTxt").style = "display: block;";
 }
 
 // PERFORM A SIMPLE, SYNCHRONOUS XMLHttpRequest CALL

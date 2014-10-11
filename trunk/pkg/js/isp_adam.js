@@ -14,7 +14,7 @@ function getCustomOptions() {
 	// make a call to function in util.js
 	var options = getBasicOptions();
 	var count = options.length;
-	options[count++] = new Option("input", "Username<br>(including @adam.com.au)", "username");
+	options[count++] = new Option("input", "Username<br><b>(Including @adam.com.au)</b>", "username");
 	options[count++] = new Option("input", "Password", "password");
 	return options;
 }
@@ -46,7 +46,8 @@ function processData(xml, text) {
 }
 
 function getUsageTypes() {
-	return [["Download","Download"]];//, ["Newsgroup","Newsgroup"]];
+	// FORMAT: Name in dictionary (and displayed on usage popup), Display name for dropdown
+	return [["Download","Download"], ["Upload","Upload"], ["Freezone","Freezone"]];
 }
 
 function loadService(reply) {
@@ -75,7 +76,8 @@ function loadServiceUsage(service) {
 	data.unit = "B";
 	
 	data.usageTypes["Download"] = new UsageType();
-	//data.usageTypes["Newsgroup"] = new UsageType();
+	data.usageTypes["Upload"] = new UsageType();
+	data.usageTypes["Freezone"] = new UsageType();
 	
 	var anytime = getTrafficType(service.usage.traffic_types, "anytime");
 	var uploads = getTrafficType(service.usage.traffic_types, "uploads");
@@ -83,10 +85,12 @@ function loadServiceUsage(service) {
 
 
 	data.usageTypes["Download"].quota = anytime.allocation;
-//	data.usageTypes["Newsgroup"].quota = newsgroupBucket.getElementsByTagName("Quota")[0].textContent;
+	data.usageTypes["Upload"].quota = uploads.allocation;
+	data.usageTypes["Freezone"].quota = freezone.allocation;
 
 	data.usageTypes["Download"].usage = anytime.used;
-//	data.usageTypes["Newsgroup"].usage = newsgroupBucket.getElementsByTagName("Usage")[0].textContent;
+	data.usageTypes["Upload"].usage = uploads.used;
+	data.usageTypes["Freezone"].usage = freezone.used;
 
 	var anniversary = service.quota_reset.anniversary;
 	var now = new Date();

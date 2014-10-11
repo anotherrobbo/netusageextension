@@ -45,7 +45,7 @@ function createCustomOptions() {
 			addCustomField(option.label, createSelectField(option.id,
 					option.values));
 		} else if ("check" == option.type) {
-			addCustomField(option.label, createCheckboxField(option.id));
+			addCustomField(option.label, createCheckboxField(option.id, option.defVal));
 		} else {
 			addCustomField(option.label, createField(option.id));
 		}
@@ -78,11 +78,12 @@ function createSelectField(fieldId, values) {
 	return field;
 }
 
-function createCheckboxField(fieldId) {
+function createCheckboxField(fieldId, checked) {
 	var field = document.createElement("input");
 	field.type = "checkbox";
 	field.id = fieldId;
-	field.className = "field";
+	field.className = "cbfield";
+	field.checked = checked;
 	return field;
 }
 
@@ -160,7 +161,12 @@ function saveOptions(e) {
 	var fields = document.getElementsByClassName("field");
 	for ( var i = 0, field; field = fields[i]; i++) {
 		localStorage[field.id] = field.value;
-		console.log("Stored " + field.id + " : " + field.value);
+		console.log("Stored " + field.id + " : " + localStorage[field.id]);
+	}
+	fields = document.getElementsByClassName("cbfield");
+	for ( var i = 0, field; field = fields[i]; i++) {
+		localStorage[field.id] = field.checked;
+		console.log("Stored " + field.id + " : " + localStorage[field.id]);
 	}
 
 	// Update status to let user know options were saved.
@@ -177,12 +183,21 @@ function restoreOptions() {
 	console.log("restoreOptions");
 	var customOptions = document.getElementById("customOptions");
 	var fields = customOptions.getElementsByClassName("field");
-	for ( var i = 0, field; field = fields[i]; i++) {
+	for (var i = 0, field; field = fields[i]; i++) {
 		var newValue = localStorage[field.id];
 		if (newValue) {
 			var origValue = field.value;
 			field.value = newValue;
-			console.log("Loaded " + field.id + " : " + newValue);
+			console.log("Loaded " + field.id + " : " + newValue + ", OLD : " + origValue);
+		}
+	}
+	fields = customOptions.getElementsByClassName("cbfield");
+	for (var i = 0, field; field = fields[i]; i++) {
+		var newValue = localStorage[field.id];
+		if (newValue) {
+			var origValue = field.checked;
+			field.checked = newValue;
+			console.log("Loaded " + field.id + " : " + newValue + ", OLD : " + origValue);
 		}
 	}
 }

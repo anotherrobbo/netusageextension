@@ -14,6 +14,7 @@ function updateUsage() {
 function showUsage(data) {
 	var graphContainer = document.getElementById("graphContainer");
 	var errorContainer = document.getElementById("errorContainer");
+	var errorMessage = document.getElementById("errorMessage");
 	var infoContainer = document.getElementById("infoContainer");
 	if (!background.failureReason) {
 		// Perform date calcs each load so they are correct against the time now.
@@ -30,18 +31,18 @@ function showUsage(data) {
 			var graph1 = document.getElementById("graph1");
 			var graph1Percent = document.getElementById("graph1Percent");
 			graph1.style.width = graph1Usage.pct + "%";
-			// if (localStorage["graphText"]) {
-			graph1Percent.innerHTML = graph1Usage.pct + "%";
-			// }
+			if (graph1Usage.quota > 0 && localStorage["graphText"] == "true") {
+				graph1Percent.innerHTML = graph1Usage.pct + "%";
+			}
 		}
 
 		if (graph2Usage) {
 			var graph2 = document.getElementById("graph2");
 			var graph2Percent = document.getElementById("graph2Percent");
 			graph2.style.width = graph2Usage.pct + "%";
-			// if (localStorage["graphText"]) {
-			graph2Percent.innerHTML = graph2Usage.pct + "%";
-			// }
+			if (graph2Usage.quota > 0 && localStorage["graphText"] == "true") {
+				graph2Percent.innerHTML = graph2Usage.pct + "%";
+			}
 		}
 
 		var timePercent = Math.round((data.totalDays - data.daysRemaining) / data.totalDays * 100);
@@ -73,7 +74,8 @@ function showUsage(data) {
 		graphContainer.style.display = "block";
 		infoContainer.style.display = "block";
 	} else {
-		errorContainer.innerHTML = "<b>ERROR:</b> " + background.failureReason;
+		errorMessage.innerHTML = "<b>ERROR:</b> " + background.failureReason;
+		errorDetail.innerHTML = background.failureDetail;
 		errorContainer.style.display = "block";
 		graphContainer.style.display = "none";
 		infoContainer.style.display = "none";
@@ -113,9 +115,15 @@ function addInfoRow(container, label, value) {
 	 */
 }
 
+//SHOW the error causing response
+function showErrorDetail() {
+	document.getElementById("errorDetail").style.display = "block";
+}
+
 //Add event listeners once the DOM has fully loaded by listening for the 'DOMContentLoaded' event
 //on the document, and adding your listeners to specific elements when it triggers.
 document.addEventListener('DOMContentLoaded', function () {
 	document.getElementById('refreshButton').addEventListener('click', updateUsage);
+	document.getElementById('showHideLink').addEventListener('click', showErrorDetail);
 	showUsage(loadObject('data'));
 });

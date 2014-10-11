@@ -26,7 +26,7 @@ div.errorContainer {
 	cursor: pointer;	
 }
 
-.errTxt {
+.errorDetail {
 	display: none;	
 }
 
@@ -186,12 +186,15 @@ div.fieldLabel {
 	position: relative;
 	top: 0;
 	left: 0;
+	width: 160px;
+	text-align: right;
 }
 
 div.fieldDiv {
 	position: relative;
 	top: -20;
-	left: 150px;
+	left: 170px;
+	text-align: left;
 }
 
 .field {
