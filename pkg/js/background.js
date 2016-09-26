@@ -48,7 +48,12 @@ function loadData(details) {
 			}
 		}, 60000);
 
-		req.open(details.action, details.url, true);
+        // Check if we want to use HTTP authentication
+        if (details.username || details.password) {
+            req.open(details.action, details.url, true, details.username, details.password);
+        } else {
+            req.open(details.action, details.url, true);
+        }
 		req.onload = function() {
 			console.log("onload, req.status=" + req.status);
 			if (timeoutId) {

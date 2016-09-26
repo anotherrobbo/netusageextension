@@ -1,7 +1,7 @@
 {
   	"manifest_version": 2,
 	"name": "Net Usage Extension",
-	"version": "0.4.1",
+	"version": "0.5.0",
 	"description": "Extension to display current internet quota usage.",
 	"background": {
 		"page": "background.html"
@@ -22,5 +22,6 @@
 		,"https://signon.bigpond.com/login"
 		,"https://my.bigpond.com/"
 		,"https://memberservices.optuszoo.com.au/login/"
+        ,"https://customer-webtools-api.internode.on.net/api/v1.5/"
 	]
 }

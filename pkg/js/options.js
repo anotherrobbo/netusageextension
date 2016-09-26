@@ -3,6 +3,7 @@ var background = chrome.extension.getBackgroundPage();
 var countries = [ [ "au", "Australia" ], [ "nz", "New Zealand" ] ];
 var isps = new Object();
 isps.au = [ [ "adam", "Adam Internet" ]
+ , ["internode","Internode"]
 // , ["bigpond","BigPond"]
 // , ["optusnet","OptusNet"]
 // , ["exetel","Exetel"]

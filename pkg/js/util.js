@@ -15,6 +15,8 @@ function Option(type, label, id, values, defVal) {
 function ConnectionDetails() {
 	this.action = "";
 	this.url = "";
+    this.username = "";
+    this.password = "";
 	this.params = null;
 	this.loaded = false;
 	this.error = "";
@@ -64,6 +66,7 @@ function getDisplayUsage(usageType, unit) {
 	if (convQuota > 0) {
 		displayedUsage += convPct;
 	}
+
 	return displayedUsage;
 }
 
@@ -81,7 +84,7 @@ function doDataDateCalc(data) {
 	var remaining = getRemainingFromNext(nextResetDate);
 	data.daysRemaining = remaining.days;
 	data.hoursRemaining = remaining.hours;
-	data.totalDays = daysInMonth(lastResetDate.getMonth, lastResetDate.getFullYear());
+	data.totalDays = daysBetween(lastResetDate, nextResetDate);
 	
 	data.peakPerDayRemaining = Math.round(data.peakRemaining / (data.daysRemaining + 1));
 	data.offpeakPerDayRemaining = Math.round(data.offpeakRemaining / (data.daysRemaining + 1));
@@ -181,6 +184,19 @@ function parseDate(dateString) {
 	return date;
 }
 
+// Returns the number of days between 2 dates
+function daysBetween(date1, date2) {
+    // The number of milliseconds in one day
+    var ONE_DAY = 1000 * 60 * 60 * 24;
+    // Convert both dates to milliseconds
+    var date1_ms = date1.getTime();
+    var date2_ms = date2.getTime();
+    // Calculate the difference in milliseconds
+    var difference_ms = Math.abs(date1_ms - date2_ms);
+    // Convert back to days and return
+    return Math.round(difference_ms/ONE_DAY);
+}
+
 // Returns the number of days in the given month (0 = Jan)
 function daysInMonth(month, year) {
 	// Note: months are zero indexed!
@@ -208,6 +224,15 @@ function getNextReset(date) {
 	var nextDay = Math.min(date.getDate(), daysInMonth(nextMonth, nextYear));
 	var nextDate = new Date(nextYear, nextMonth, nextDay);
 	return nextDate;
+}
+
+// Tries to guess the last reset date based on one month before the given rollover date
+function getLastReset(date) {
+	var lastMonth = date.getMonth() > 0 ? date.getMonth() - 1 : 11;
+	var lastYear = lastMonth < 11 ? date.getFullYear() : date.getFullYear() - 1;
+	var lastDay = Math.min(date.getDate(), daysInMonth(lastMonth, lastYear));
+	var lastDate = new Date(lastYear, lastMonth, lastDay);
+	return lastDate;
 }
 
 // Tries to guess the remaining time to reset based on one month from the given start date
@@ -246,7 +271,7 @@ function convertUnits(fromUnits, toUnits, data) {
 	from = units[fromUnits];
 	to = units[toUnits];
 	diff = from - to;
-	console.log(diff);
+	//console.log(diff);
 	if (diff < 1) {
 		return Math.round(data / Math.pow(10, Math.abs(diff)));
 	} else if (diff > 1) {
@@ -274,5 +299,15 @@ function callURL(url) {
 
 	if (request.status === 200) {
 	  return request.responseText;
+	}
+}
+
+function callURLForXml(url) {
+	var request = new XMLHttpRequest();
+	request.open("GET", url, false);  // 'false' makes the request synchronous
+	request.send(null);
+
+	if (request.status === 200) {
+	  return request.responseXML;
 	}
 }

@@ -45,9 +45,11 @@ function showUsage(data) {
 			}
 		}
 
-		var timePercent = Math.round((data.totalDays - data.daysRemaining) / data.totalDays * 100);
-		var arrow = document.getElementById("arrow");
-		arrow.style.left = timePercent + "%";
+		var timePercent = (data.totalDays - (data.daysRemaining + (data.hoursRemaining / 24))) / data.totalDays;
+		var graph = document.getElementById("graph");
+        var arrow = document.getElementById("arrow");
+        var position = graph.clientWidth * timePercent;
+		arrow.style.left = (position - (arrow.clientWidth / 2)) + "px";
 
 		// update info table
 		removeAllChildren(infoContainer);
