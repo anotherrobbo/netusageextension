@@ -6,9 +6,13 @@ Simple Net Usage Extension inspired by the Net Usage Item for Firefox (http://ne
 
 ## Supported ISPs
 * Adam Internet
+* Internode
 * Orcon
 
 ## Release Information
+###Version 0.5.0:
+* Added Internode support
+
 ### Version 0.4.1:
 * Fixed link to show response details on error.
 * Added additional Adam usage types (Freezone and Uploads).
